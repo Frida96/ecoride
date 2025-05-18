@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Employé - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h2 class="mb-0">Espace Employé</h2>
+                </div>
+                <div class="card-body">
+                    <h3>Bonjour {{ app.user.nomComplet }}!</h3>
+                    <p class="lead">Vous êtes connecté en tant qu'employé EcoRide.</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Gestion des trajets</h5>
+                                    <p class="card-text">Visualisez et modifiez les trajets disponibles.</p>
+                                    <a href="#" class="btn btn-outline-info">Accéder</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Messages de contact</h5>
+                                    <p class="card-text">Répondez aux demandes des utilisateurs.</p>
+                                    <a href="#" class="btn btn-outline-info">Voir les messages</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Statistiques</h5>
+                                    <p class="card-text">Consultez les statistiques de la plateforme.</p>
+                                    <a href="#" class="btn btn-outline-info">Voir les stats</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
