@@ -169,7 +169,7 @@ Mot de passe: employepass
 
 Utilisateur
 
-Email: utilisateur@ecoride.com
+Email: utilisateur@exemple.com
 Mot de passe: userpass
 
 
