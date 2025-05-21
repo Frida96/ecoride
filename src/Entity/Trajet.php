@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\TrajetRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: TrajetRepository::class)]
 class Trajet
@@ -122,6 +124,7 @@ class Trajet
 
         return $this;
     }
+
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private ?bool $estEcologique = false;
 
@@ -133,6 +136,72 @@ class Trajet
     public function setEstEcologique(bool $estEcologique): static
     {
         $this->estEcologique = $estEcologique;
+
+        return $this;
+    }
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'trajetsPropose')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $conducteur = null;
+
+    #[ORM\ManyToOne(targetEntity: Vehicule::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Vehicule $vehicule = null;
+    public function getConducteur(): ?User
+    {
+        return $this->conducteur;
+    }
+
+    public function setConducteur(?User $conducteur): self
+    {
+        $this->conducteur = $conducteur;
+        return $this;
+    }
+
+    public function getVehicule(): ?Vehicule
+    {
+        return $this->vehicule;
+    }
+
+    public function setVehicule(?Vehicule $vehicule): self
+    {
+        $this->vehicule = $vehicule;
+        return $this;
+    }
+
+    #[ORM\OneToMany(mappedBy: 'conducteur', targetEntity: Trajet::class, orphanRemoval: true)]
+    private Collection $trajetsPropose;
+
+    
+    public function __construct()
+    {
+        $this->trajetsPropose = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, Trajet>
+     */
+    public function getTrajetsPropose(): Collection
+    {
+        return $this->trajetsPropose;
+    }
+
+    public function addTrajetPropose(Trajet $trajet): self
+    {
+        if (!$this->trajetsPropose->contains($trajet)) {
+            $this->trajetsPropose->add($trajet);
+        }
+
+        return $this;
+    }
+
+    public function removeTrajetPropose(Trajet $trajet): self
+    {
+        if ($this->trajetsPropose->removeElement($trajet)) {
+            if ($trajet->getConducteur() === $this) {
+                $trajet->setConducteur(null);
+            }
+        }
 
         return $this;
     }

@@ -1,0 +1,186 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes trajets proposés - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Mes trajets proposés</h1>
+        </div>
+        <div class="col-auto">
+            <a href="{{ path('app_user_trajets_nouveau') }}" class="btn btn-success">
+                <i class="fas fa-plus-circle me-2"></i> Proposer un trajet
+            </a>
+        </div>
+    </div>
+    
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    {% if trajets|length > 0 %}
+        <div class="card shadow">
+            <div class="card-header bg-light">
+                <ul class="nav nav-tabs card-header-tabs" id="trajetsTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab" aria-controls="upcoming" aria-selected="true">À venir</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="past-tab" data-bs-toggle="tab" data-bs-target="#past" type="button" role="tab" aria-controls="past" aria-selected="false">Passés</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="trajetsTabsContent">
+                    <!-- Trajets à venir -->
+                    <div class="tab-pane fade show active" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Trajet</th>
+                                        <th>Places</th>
+                                        <th>Prix</th>
+                                        <th>Véhicule</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% set hasUpcoming = false %}
+                                    {% for trajet in trajets %}
+                                        {% if trajet.date >= date() %}
+                                            {% set hasUpcoming = true %}
+                                            <tr>
+                                                <td>
+                                                    {{ trajet.date|date('d/m/Y') }}<br>
+                                                    <small>{{ trajet.heureDepart|date('H:i') }}</small>
+                                                </td>
+                                                <td>
+                                                    <strong>{{ trajet.depart }}</strong> → <strong>{{ trajet.arrivee }}</strong>
+                                                </td>
+                                                <td>{{ trajet.places }}</td>
+                                                <td>{{ trajet.prix }} crédits</td>
+                                                <td>
+                                                    {{ trajet.vehicule.marque }} {{ trajet.vehicule.modele }}
+                                                    {% if trajet.estEcologique %}
+                                                        <span class="badge bg-success">Écologique</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="{{ path('app_user_trajets_modifier', {'id': trajet.id}) }}" class="btn btn-outline-primary">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ trajet.id }}">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    <!-- Modal de confirmation de suppression -->
+                                                    <div class="modal fade" id="deleteModal{{ trajet.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ trajet.id }}" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="deleteModalLabel{{ trajet.id }}">Confirmer la suppression</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p>Êtes-vous sûr de vouloir supprimer ce trajet ?</p>
+                                                                    <p><strong>{{ trajet.depart }} → {{ trajet.arrivee }}</strong> le {{ trajet.date|date('d/m/Y') }} à {{ trajet.heureDepart|date('H:i') }}</p>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                                    <form method="post" action="{{ path('app_user_trajets_supprimer', {'id': trajet.id}) }}">
+                                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ trajet.id) }}">
+                                                                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if not hasUpcoming %}
+                                        <tr>
+                                            <td colspan="6" class="text-center py-3">
+                                                <p class="mb-0">Vous n'avez pas de trajets à venir</p>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Trajets passés -->
+                    <div class="tab-pane fade" id="past" role="tabpanel" aria-labelledby="past-tab">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Trajet</th>
+                                        <th>Places</th>
+                                        <th>Prix</th>
+                                        <th>Véhicule</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% set hasPast = false %}
+                                    {% for trajet in trajets %}
+                                        {% if trajet.date < date() %}
+                                            {% set hasPast = true %}
+                                            <tr>
+                                                <td>
+                                                    {{ trajet.date|date('d/m/Y') }}<br>
+                                                    <small>{{ trajet.heureDepart|date('H:i') }}</small>
+                                                </td>
+                                                <td>
+                                                    <strong>{{ trajet.depart }}</strong> → <strong>{{ trajet.arrivee }}</strong>
+                                                </td>
+                                                <td>{{ trajet.places }}</td>
+                                                <td>{{ trajet.prix }} crédits</td>
+                                                <td>
+                                                    {{ trajet.vehicule.marque }} {{ trajet.vehicule.modele }}
+                                                    {% if trajet.estEcologique %}
+                                                        <span class="badge bg-success">Écologique</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if not hasPast %}
+                                        <tr>
+                                            <td colspan="5" class="text-center py-3">
+                                                <p class="mb-0">Vous n'avez pas de trajets passés</p>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p class="mb-0">Vous n'avez pas encore proposé de trajets. Cliquez sur "Proposer un trajet" pour commencer !</p>
+        </div>
+    {% endif %}
+    
+    <div class="text-center mt-4">
+        <a href="{{ path('user_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Retour à mon espace
+        </a>
+    </div>
+</div>
+{% endblock %}

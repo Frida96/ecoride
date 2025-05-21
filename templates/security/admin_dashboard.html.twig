@@ -20,7 +20,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Gestion des utilisateurs</h5>
                                     <p class="card-text">Ajoutez, modifiez ou supprimez des comptes utilisateurs.</p>
-                                    <a href="#" class="btn btn-outline-dark">Gérer</a>
+                                    <a href="{{ path('admin_users') }}" class="btn btn-outline-dark">Gérer</a>
                                 </div>
                             </div>
                         </div>
@@ -40,10 +40,15 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Logs et statistiques</h5>
                                     <p class="card-text">Consultez les logs et statistiques détaillées.</p>
-                                    <a href="#" class="btn btn-outline-dark">Analyser</a>
+                                    <a href="{{ path('admin_stats') }}" class="btn btn-outline-dark">Analyser</a>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="text-center mt-5">
+                        <a href="{{ path('app_logout') }}" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i>Se déconnecter
+                        </a>
                     </div>
                 </div>
             </div>

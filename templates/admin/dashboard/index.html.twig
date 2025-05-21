@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord - Administration{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .stats-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .stats-icon {
+            font-size: 2rem;
+            color: #6c757d;
+        }
+        .stats-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #343a40;
+        }
+        .card-feature {
+            height: 100%;
+            transition: transform 0.3s;
+        }
+        .card-feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #6c757d;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1>Tableau de bord administrateur</h1>
+            <p class="text-muted">Bienvenue, {{ app.user.nomComplet }}! Voici un aperçu de votre plateforme.</p>
+        </div>
+        <div class="col-auto">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-cog me-1"></i> Actions
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown">
+                    <li><a class="dropdown-item" href="{{ path('admin_users') }}"><i class="fas fa-users me-2"></i> Gérer les utilisateurs</a></li>
+                    <li><a class="dropdown-item" href="{{ path('admin_stats') }}"><i class="fas fa-chart-line me-2"></i> Voir les statistiques</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Déconnexion</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistiques globales -->
+    <div class="row mb-5">
+        <div class="col-md-4 mb-3">
+            <div class="stats-card shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Utilisateurs</h6>
+                        <div class="stats-value">{{ countUsers }}</div>
+                    </div>
+                    <div class="stats-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="stats-card shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Trajets proposés</h6>
+                        <div class="stats-value">{{ countTrajets }}</div>
+                    </div>
+                    <div class="stats-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="stats-card shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Crédits gagnés</h6>
+                        <div class="stats-value">{{ countCredits }}</div>
+                    </div>
+                    <div class="stats-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fonctionnalités principales -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card card-feature shadow">
+                <div class="card-body text-center py-5">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>Gestion des utilisateurs</h4>
+                    <p class="text-muted mb-4">Ajouter, modifier ou supprimer des comptes utilisateurs et employés.</p>
+                    <a href="{{ path('admin_users') }}" class="btn btn-primary">Gérer</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card card-feature shadow">
+                <div class="card-body text-center py-5">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Statistiques</h4>
+                    <p class="text-muted mb-4">Visualiser des graphiques détaillés sur l'utilisation de la plateforme.</p>
+                    <a href="{{ path('admin_stats') }}" class="btn btn-success">Analyser</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card card-feature shadow">
+                <div class="card-body text-center py-5">
+                    <div class="feature-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h4>Configuration</h4>
+                    <p class="text-muted mb-4">Modifier les paramètres généraux de la plateforme EcoRide.</p>
+                    <a href="#" class="btn btn-secondary">Paramètres</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

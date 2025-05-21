@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes véhicules - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Mes véhicules</h1>
+        </div>
+        <div class="col-auto">
+            <a href="{{ path('app_user_vehicules_nouveau') }}" class="btn btn-success">
+                <i class="fas fa-plus-circle me-2"></i> Ajouter un véhicule
+            </a>
+        </div>
+    </div>
+    
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    {% for message in app.flashes('warning') %}
+        <div class="alert alert-warning">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    {% if vehicules|length > 0 %}
+        <div class="row">
+            {% for vehicule in vehicules %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">{{ vehicule.marque }} {{ vehicule.modele }}</h5>
+                            {% if vehicule.estEcologique %}
+                                <span class="badge bg-success">Écologique</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2"><strong>Immatriculation :</strong> {{ vehicule.immatriculation }}</p>
+                            <p class="mb-2"><strong>Couleur :</strong> {{ vehicule.couleur }}</p>
+                            <p class="mb-2"><strong>Places :</strong> {{ vehicule.places }}</p>
+                            <p class="mb-2"><strong>Énergie :</strong> {{ vehicule.energie }}</p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ path('app_user_vehicules_modifier', {'id': vehicule.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit me-1"></i> Modifier
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ vehicule.id }}">
+                                    <i class="fas fa-trash me-1"></i> Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal de confirmation de suppression -->
+                    <div class="modal fade" id="deleteModal{{ vehicule.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ vehicule.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel{{ vehicule.id }}">Confirmer la suppression</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Êtes-vous sûr de vouloir supprimer ce véhicule ?</p>
+                                    <p><strong>{{ vehicule.marque }} {{ vehicule.modele }}</strong> ({{ vehicule.immatriculation }})</p>
+                                    <p class="text-danger"><strong>Attention :</strong> Si ce véhicule est associé à des trajets, ceux-ci seront également supprimés.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                    <form method="post" action="{{ path('app_user_vehicules_supprimer', {'id': vehicule.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ vehicule.id) }}">
+                                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p class="mb-0">Vous n'avez pas encore ajouté de véhicule. Cliquez sur "Ajouter un véhicule" pour commencer !</p>
+        </div>
+    {% endif %}
+    
+    <div class="text-center mt-4">
+        <a href="{{ path('app_user_profil') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Retour à mon profil
+        </a>
+    </div>
+</div>
+{% endblock %}

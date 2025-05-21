@@ -24,7 +24,7 @@ class AppFixtures extends Fixture
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'adminpass'));
         $admin->setNom('Durand');
-        $admin->setPrenom('Alice');
+        $admin->setPrenom('José');
         $manager->persist($admin);
 
         // Employé
@@ -38,7 +38,7 @@ class AppFixtures extends Fixture
 
         // Utilisateur
         $user = new User();
-        $user->setEmail('utilisateur@ecoride.com');
+        $user->setEmail('utilisateur@exemple.com');
         $user->setRoles(['ROLE_UTILISATEUR']);
         $user->setPassword($this->passwordHasher->hashPassword($user, 'userpass'));
         $user->setNom('Lemoine');

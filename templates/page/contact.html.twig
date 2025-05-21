@@ -3,19 +3,75 @@
 {% block title %}Contact - EcoRide{% endblock %}
 
 {% block body %}
-    <h2>Contactez-nous</h2>
-    <p>Une question ? Une suggestion ? N’hésitez pas à nous écrire !</p>
-
-    <form method="post">
-        <div class="mb-3">
-            <input type="text" name="nom" class="form-control" placeholder="Votre nom" required>
+<div class="container my-5">
+    <h1 class="mb-4">Contactez-nous</h1>
+    
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
         </div>
-        <div class="mb-3">
-            <input type="email" name="email" class="form-control" placeholder="Votre email" required>
+    {% endfor %}
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Envoyez-nous un message</h5>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_label(form.nom) }}
+                            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.nom) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.email) }}
+                            {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.email) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.message) }}
+                            {{ form_widget(form.message, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.message) }}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">Envoyer</button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <textarea name="message" rows="5" class="form-control" placeholder="Votre message" required></textarea>
+        
+        <div class="col-md-6">
+            <div class="card shadow h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Informations de contact</h5>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <div class="mb-4">
+                        <h5><i class="fas fa-envelope me-2"></i> Email</h5>
+                        <p class="mb-0"><a href="mailto:contact@ecoride.fr">contact@ecoride.fr</a></p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5><i class="fas fa-phone me-2"></i> Téléphone</h5>
+                        <p class="mb-0"><a href="tel:+33123456789">+33 1 23 45 67 89</a></p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5><i class="fas fa-map-marker-alt me-2"></i> Adresse</h5>
+                        <p class="mb-0">123 rue de l'Écologie<br>75000 Paris<br>France</p>
+                    </div>
+                    
+                    <div class="mt-auto">
+                        <h5><i class="fas fa-clock me-2"></i> Horaires</h5>
+                        <p class="mb-0">Du lundi au vendredi : 9h - 18h</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button type="submit" class="btn btn-success">Envoyer</button>
-    </form>
+    </div>
+</div>
 {% endblock %}

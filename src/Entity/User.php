@@ -1,12 +1,15 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Entity\Vehicule;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')] 
@@ -35,6 +38,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $prenom = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $pseudo = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $telephone = null;
+
+    #[ORM\Column(options: ["default" => false])]
+    private bool $identiteVerifiee = false;
+
+    #[ORM\Column(options: ["default" => false])]
+    private bool $emailVerifie = false;
+
+    #[ORM\Column(options: ["default" => false])]
+    private bool $telephoneVerifie = false;
+
+    #[ORM\Column(type: "text", nullable: true)]
+    private ?string $bio = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photoProfil = null;
+
+    #[ORM\OneToMany(mappedBy: 'proprietaire', targetEntity: Vehicule::class, orphanRemoval: true)]
+    private Collection $vehicules;
+
+    public function __construct()
+    {
+        $this->vehicules = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -69,7 +101,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -102,8 +133,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+
     }
 
     public function getNom(): ?string
@@ -133,5 +163,110 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getNomComplet(): string
     {
         return $this->prenom . ' ' . $this->nom;
+    }
+
+    public function getPseudo(): ?string
+    {
+        return $this->pseudo;
+    }
+
+    public function setPseudo(?string $pseudo): self
+    {
+        $this->pseudo = $pseudo;
+        return $this;
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(?string $telephone): self
+    {
+        $this->telephone = $telephone;
+        return $this;
+    }
+
+    public function isIdentiteVerifiee(): bool
+    {
+        return $this->identiteVerifiee;
+    }
+
+    public function setIdentiteVerifiee(bool $identiteVerifiee): self
+    {
+        $this->identiteVerifiee = $identiteVerifiee;
+        return $this;
+    }
+
+    public function isEmailVerifie(): bool
+    {
+        return $this->emailVerifie;
+    }
+
+    public function setEmailVerifie(bool $emailVerifie): self
+    {
+        $this->emailVerifie = $emailVerifie;
+        return $this;
+    }
+
+    public function isTelephoneVerifie(): bool
+    {
+        return $this->telephoneVerifie;
+    }
+
+    public function setTelephoneVerifie(bool $telephoneVerifie): self
+    {
+        $this->telephoneVerifie = $telephoneVerifie;
+        return $this;
+    }
+
+    public function getBio(): ?string
+    {
+        return $this->bio;
+    }
+
+    public function setBio(?string $bio): self
+    {
+        $this->bio = $bio;
+        return $this;
+    }
+
+    public function getPhotoProfil(): ?string
+    {
+        return $this->photoProfil;
+    }
+    public function setPhotoProfil(?string $photoProfil): self
+    {
+        $this->photoProfil = $photoProfil;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Vehicule>
+     */
+    public function getVehicules(): Collection
+    {
+        return $this->vehicules;
+    }
+
+    public function addVehicule(Vehicule $vehicule): self
+    {
+        if (!$this->vehicules->contains($vehicule)) {
+            $this->vehicules->add($vehicule);
+            $vehicule->setProprietaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVehicule(Vehicule $vehicule): self
+    {
+        if ($this->vehicules->removeElement($vehicule)) {
+            if ($vehicule->getProprietaire() === $this) {
+                $vehicule->setProprietaire(null);
+            }
+        }
+
+        return $this;
     }
 }

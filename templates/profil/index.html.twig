@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h2 class="mb-0">Mon profil</h2>
+                </div>
+                
+                <div class="card-body">
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    
+                    <div class="text-center mb-4">
+                        {% if user.photoProfil %}
+                            <img src="{{ asset('uploads/photos-profil/' ~ user.photoProfil) }}" class="rounded-circle mb-3" width="150" height="150" alt="Photo de profil">
+                        {% else %}
+                            <div class="bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                                <i class="fas fa-user fa-4x text-secondary"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <h3 class="mb-0">{{ user.pseudo ?? user.nomComplet }}</h3>
+                        <p class="text-muted">{{ user.email }}</p>
+                        
+                        <a href="{{ path('app_user_profil_edit') }}" class="btn btn-outline-success mb-2">
+                            <i class="fas fa-edit me-1"></i> Modifier mon profil
+                        </a>
+                        <button class="btn btn-outline-primary mb-2" id="btnPhotoProfileUpload">
+                            <i class="fas fa-camera me-1"></i> Ajouter/Modifier photo
+                        </button>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h4 class="mb-3">Vérifier votre profil</h4>
+                    <div class="list-group mb-4">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas {{ user.identiteVerifiee ? 'fa-check-circle text-success' : 'fa-times-circle text-muted' }} me-2"></i>
+                                Vérifier une pièce d'identité
+                            </div>
+                            {% if not user.identiteVerifiee %}
+                                <a href="#" class="btn btn-sm btn-outline-primary">Vérifier</a>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas {{ user.emailVerifie ? 'fa-check-circle text-success' : 'fa-times-circle text-muted' }} me-2"></i>
+                                Vérifier adresse mail
+                            </div>
+                            {% if not user.emailVerifie %}
+                                <a href="#" class="btn btn-sm btn-outline-primary">Vérifier</a>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas {{ user.telephoneVerifie ? 'fa-check-circle text-success' : 'fa-times-circle text-muted' }} me-2"></i>
+                                Vérifier numéro de téléphone
+                                {% if user.telephone %}
+                                    <span class="text-muted">({{ user.telephone }})</span>
+                                {% endif %}
+                            </div>
+                            {% if not user.telephoneVerifie %}
+                                <a href="#" class="btn btn-sm btn-outline-primary">Vérifier</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <h4 class="mb-3">À propos de vous</h4>
+                    <div class="list-group mb-4">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas {{ user.bio ? 'fa-check-circle text-success' : 'fa-times-circle text-muted' }} me-2"></i>
+                                {% if user.bio %}
+                                    <strong>Bio:</strong> {{ user.bio }}
+                                {% else %}
+                                    Ajouter une bio
+                                {% endif %}
+                            </div>
+                            <a href="{{ path('app_user_profil_edit') }}" class="btn btn-sm btn-outline-primary">
+                                {{ user.bio ? 'Modifier' : 'Ajouter' }}
+                            </a>
+                        </div>
+                        
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-times-circle text-muted me-2"></i>
+                                Préférences de voyage
+                            </div>
+                            <a href="#" class="btn btn-sm btn-outline-primary">Définir</a>
+                        </div>
+                    </div>
+                    
+                    <h4 class="mb-3">Véhicules</h4>
+                    {% if user.vehicules|length > 0 %}
+                        <div class="list-group mb-3">
+                            {% for vehicule in user.vehicules %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1">{{ vehicule.marque }} {{ vehicule.modele }}</h5>
+                                            <p class="mb-1 text-muted">
+                                                <small>
+                                                    Immatriculation: {{ vehicule.immatriculation }} | 
+                                                    Places: {{ vehicule.places }} | 
+                                                    Énergie: {{ vehicule.energie }}
+                                                    {% if vehicule.estEcologique %}
+                                                        <span class="badge bg-success">Écologique</span>
+                                                    {% endif %}
+                                                </small>
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <a href="#" class="btn btn-sm btn-outline-primary">Modifier</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-3">
+                            <p class="mb-0">Vous n'avez pas encore ajouté de véhicule.</p>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-grid">
+                    <a href="{{ path('app_user_vehicules') }}" class="btn btn-outline-success">
+                        <i class="fas fa-plus-circle me-2"></i> Ajouter un véhicule
+                    </a>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{{ path('user_dashboard') }}" class="btn btn-link text-muted">
+                    <i class="fas fa-arrow-left me-1"></i> Retour à mon espace
+                </a>
+                
+                <a href="{{ path('app_logout') }}" class="btn btn-danger ms-3">
+                    <i class="fas fa-sign-out-alt me-1"></i> Se déconnecter
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="photoProfilForm" method="post" action="{{ path('app_user_profil_upload_photo') }}" enctype="multipart/form-data" style="display: none;">
+    <input type="file" id="photoProfilInput" name="photoProfil" accept="image/jpeg, image/png">
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btnPhotoProfileUpload = document.getElementById('btnPhotoProfileUpload');
+    const photoProfilInput = document.getElementById('photoProfilInput');
+    const photoProfilForm = document.getElementById('photoProfilForm');
+    
+    btnPhotoProfileUpload.addEventListener('click', function() {
+        photoProfilInput.click();
+    });
+    
+    photoProfilInput.addEventListener('change', function() {
+        if (photoProfilInput.files.length > 0) {
+            photoProfilForm.submit();
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,6 +1,4 @@
 <?php
-
-// src/Repository/TrajetRepository.php
 namespace App\Repository;
 
 use App\Entity\Trajet;
@@ -52,5 +50,77 @@ class TrajetRepository extends ServiceEntityRepository
         $result = $qb->getQuery()->getOneOrNullResult();
         
         return $result ? $result['date'] : null;
+    }
+    /**
+     * Compte le nombre de trajets créés par jour.
+     */
+    public function countTrajetsByDay(\DateTime $dateDebut, \DateTime $dateFin): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT DATE(t.date) AS jour, COUNT(t.id) AS total
+            FROM trajet t
+            WHERE t.date BETWEEN :debut AND :fin
+            GROUP BY jour
+            ORDER BY jour ASC
+        ';
+
+        $stmt = $conn->prepare($sql);
+        $results = $stmt->executeQuery([
+            'debut' => $dateDebut->format('Y-m-d'),
+            'fin' => $dateFin->format('Y-m-d'),
+        ])->fetchAllAssociative();
+
+        return $this->fillMissingDays($results, $dateDebut, $dateFin, 'total', 'count');
+    }
+
+    /**
+     * Calcule la somme des crédits gagnés par jour (2 crédits par trajet).
+     */
+    public function sumCreditsByDay(\DateTime $dateDebut, \DateTime $dateFin): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT DATE(t.date) AS jour, COUNT(t.id) * 2 AS credits
+            FROM trajet t
+            WHERE t.date BETWEEN :debut AND :fin
+            GROUP BY jour
+            ORDER BY jour ASC
+        ';
+
+        $stmt = $conn->prepare($sql);
+        $results = $stmt->executeQuery([
+            'debut' => $dateDebut->format('Y-m-d'),
+            'fin' => $dateFin->format('Y-m-d'),
+        ])->fetchAllAssociative();
+
+        return $this->fillMissingDays($results, $dateDebut, $dateFin, 'credits', 'credits');
+    }
+
+    /**
+     * Complète les jours manquants dans une période, en insérant 0 si aucune donnée.
+     */
+    private function fillMissingDays(array $results, \DateTime $dateDebut, \DateTime $dateFin, string $keyInResult, string $keyOut): array
+    {
+        $formattedResults = [];
+        $currentDate = (clone $dateDebut)->setTime(0, 0);
+
+        $datesMap = [];
+        foreach ($results as $result) {
+            $datesMap[$result['jour']] = (int) $result[$keyInResult];
+        }
+
+        while ($currentDate <= $dateFin) {
+            $dateStr = $currentDate->format('Y-m-d');
+            $formattedResults[] = [
+                'date' => clone $currentDate,
+                $keyOut => $datesMap[$dateStr] ?? 0,
+            ];
+            $currentDate->modify('+1 day');
+        }
+
+        return $formattedResults;
     }
 }

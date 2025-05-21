@@ -1,0 +1,206 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques - Administration{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .stats-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .stats-icon {
+            font-size: 2.5rem;
+            color: #6c757d;
+        }
+        .stats-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #343a40;
+        }
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1>Statistiques et analyses</h1>
+            <p class="text-muted">Vue d'ensemble des performances de la plateforme EcoRide</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Retour au tableau de bord
+            </a>
+        </div>
+    </div>
+    
+    <!-- Statistiques globales -->
+    <div class="row mb-5">
+        <div class="col-md-6 mx-auto">
+            <div class="stats-card shadow text-center">
+                <h4 class="text-muted mb-3">Total des crédits gagnés par la plateforme</h4>
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="stats-icon me-3">
+                        <i class="fas fa-coins text-warning"></i>
+                    </div>
+                    <div class="stats-value">{{ totalCredits }}</div>
+                </div>
+                <p class="text-muted mt-3 mb-0">Crédits accumulés depuis le lancement</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Graphiques -->
+    <div class="row">
+        <div class="col-12 mb-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Nombre de covoiturages par jour (30 derniers jours)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="covoituragesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 mb-5">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Crédits gagnés par jour (30 derniers jours)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="creditsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Informations complémentaires -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Informations sur les statistiques</h5>
+        </div>
+        <div class="card-body">
+            <p>Les graphiques ci-dessus présentent les données sur les 30 derniers jours. Voici quelques explications :</p>
+            <ul>
+                <li><strong>Nombre de covoiturages</strong> : Représente le nombre total de trajets créés chaque jour.</li>
+                <li><strong>Crédits gagnés</strong> : Représente les crédits gagnés par la plateforme (2 crédits par trajet).</li>
+            </ul>
+            <p>Ces statistiques vous permettent de suivre l'évolution de la plateforme et d'identifier des tendances.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Données pour le graphique des covoiturages
+            const datesCovoiturages = {{ datesCovoiturages|raw }};
+            const nbCovoiturages = {{ nbCovoiturages|raw }};
+            
+            // Données pour le graphique des crédits
+            const datesCredits = {{ datesCredits|raw }};
+            const montantCredits = {{ montantCredits|raw }};
+            
+            // Graphique des covoiturages
+            const ctxCovoiturages = document.getElementById('covoituragesChart').getContext('2d');
+            const covoituragesChart = new Chart(ctxCovoiturages, {
+                type: 'line',
+                data: {
+                    labels: datesCovoiturages,
+                    datasets: [{
+                        label: 'Nombre de covoiturages',
+                        data: nbCovoiturages,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+            
+            // Graphique des crédits
+            const ctxCredits = document.getElementById('creditsChart').getContext('2d');
+            const creditsChart = new Chart(ctxCredits, {
+                type: 'bar',
+                data: {
+                    labels: datesCredits,
+                    datasets: [{
+                        label: 'Crédits gagnés',
+                        data: montantCredits,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

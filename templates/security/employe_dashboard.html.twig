@@ -30,20 +30,23 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Messages de contact</h5>
                                     <p class="card-text">Répondez aux demandes des utilisateurs.</p>
-                                    <a href="#" class="btn btn-outline-info">Voir les messages</a>
+                                                <a href="{{ path('employe_messages') }}" class="btn btn-outline-info position-relative">
+                                                    Voir les messages
+                                                    {% if unreadCount is defined and unreadCount > 0 %}
+                                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                            {{ unreadCount }}
+                                                            <span class="visually-hidden">messages non lus</span>
+                                                        </span>
+                                                    {% endif %}
+                                                </a>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h5 class="card-title">Statistiques</h5>
-                                    <p class="card-text">Consultez les statistiques de la plateforme.</p>
-                                    <a href="#" class="btn btn-outline-info">Voir les stats</a>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="text-center mt-5">
+                        <a href="{{ path('app_logout') }}" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i>Se déconnecter
+                        </a>
                     </div>
                 </div>
             </div>

@@ -39,8 +39,6 @@ class SecurityController extends AbstractController
     #[Route('/deconnexion', name: 'app_logout')]
     public function logout(): void
     {
-        // Cette méthode sera interceptée par le firewall de sécurité
-        // et ne sera jamais exécutée
         throw new \LogicException('Cette méthode ne devrait jamais être appelée.');
     }
     
