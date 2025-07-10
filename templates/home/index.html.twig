@@ -1,0 +1,221 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}EcoRide - Covoiturage écologique en France{% endblock %}
+
+{% block body %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-leaf me-3"></i>
+                    Voyagez écologique avec EcoRide
+                </h1>
+                <p class="lead mb-4">
+                    Réduisez votre impact environnemental tout en économisant sur vos déplacements. 
+                    Rejoignez la communauté du covoiturage responsable !
+                </p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <span class="badge bg-light text-dark fs-6 px-3 py-2">
+                        <i class="fas fa-leaf text-success me-1"></i>100% Écologique
+                    </span>
+                    <span class="badge bg-light text-dark fs-6 px-3 py-2">
+                        <i class="fas fa-users text-primary me-1"></i>Communauté Active
+                    </span>
+                    <span class="badge bg-light text-dark fs-6 px-3 py-2">
+                        <i class="fas fa-euro-sign text-warning me-1"></i>Économique
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Section -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="search-box">
+                <h3 class="text-center mb-4">
+                    <i class="fas fa-search text-success me-2"></i>
+                    Trouvez votre itinéraire
+                </h3>
+                <form action="#" method="GET">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="depart" class="form-label">
+                                <i class="fas fa-map-marker-alt text-success me-1"></i>
+                                Lieu de départ
+                            </label>
+                            <input type="text" class="form-control" id="depart" name="depart" 
+                                   placeholder="Ville de départ" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="arrivee" class="form-label">
+                                <i class="fas fa-flag-checkered text-primary me-1"></i>
+                                Lieu d'arrivée
+                            </label>
+                            <input type="text" class="form-control" id="arrivee" name="arrivee" 
+                                   placeholder="Ville d'arrivée" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="date" class="form-label">
+                                <i class="fas fa-calendar text-warning me-1"></i>
+                                Date de départ
+                            </label>
+                            <input type="date" class="form-control" id="date" name="date" 
+                                   min="{{ 'now'|date('Y-m-d') }}" required>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <button type="submit" class="btn btn-eco w-100">
+                                <i class="fas fa-search me-2"></i>Rechercher
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Presentation Section -->
+<section class="container my-5 py-5">
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-6">
+            <h2 class="fw-bold mb-4">
+                <i class="fas fa-heart text-success me-2"></i>
+                Notre Mission
+            </h2>
+            <p class="lead">
+                EcoRide est une startup française qui révolutionne la mobilité en encourageant 
+                le covoiturage écologique. Notre mission : réduire l'impact environnemental 
+                des déplacements tout en créant du lien social.
+            </p>
+            <p>
+                Plateforme dédiée aux voyageurs soucieux de l'environnement, nous privilégions 
+                les véhicules électriques et les déplacements partagés pour un avenir plus vert.
+            </p>
+            <a href="#features" class="btn btn-eco">
+                <i class="fas fa-arrow-down me-2"></i>En savoir plus
+            </a>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="position-relative">
+                <img src="https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                     alt="Covoiturage écologique" class="img-fluid rounded-4 shadow-lg">
+                <div class="position-absolute top-0 end-0 bg-success text-white p-3 rounded-circle m-3">
+                    <i class="fas fa-leaf fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">
+            <i class="fas fa-star text-warning me-2"></i>
+            Pourquoi choisir EcoRide ?
+        </h2>
+        <p class="lead text-muted">Des avantages qui font la différence</p>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+            <div class="card feature-card h-100">
+                <div class="card-body">
+                    <i class="fas fa-leaf eco-icon"></i>
+                    <h4>100% Écologique</h4>
+                    <p>Privilégiez les véhicules électriques et réduisez votre empreinte carbone. 
+                    Chaque trajet partagé compte pour la planète.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card feature-card h-100">
+                <div class="card-body">
+                    <i class="fas fa-euro-sign eco-icon"></i>
+                    <h4>Économique</h4>
+                    <p>Partagez les frais de transport et réalisez des économies substantielles 
+                    sur vos déplacements quotidiens.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card feature-card h-100">
+                <div class="card-body">
+                    <i class="fas fa-users eco-icon"></i>
+                    <h4>Communauté</h4>
+                    <p>Rencontrez des personnes partageant vos valeurs écologiques et 
+                    créez des liens durables.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card feature-card h-100">
+                <div class="card-body">
+                    <i class="fas fa-shield-alt eco-icon"></i>
+                    <h4>Sécurisé</h4>
+                    <p>Profils vérifiés, système d'avis et double validation pour 
+                    voyager en toute sérénité.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card feature-card h-100">
+                <div class="card-body">
+                    <i class="fas fa-mobile-alt eco-icon"></i>
+                    <h4>Simple</h4>
+                    <p>Interface intuitive et recherche facile pour trouver 
+                    rapidement le covoiturage qui vous convient.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card feature-card h-100">
+                <div class="card-body">
+                    <i class="fas fa-clock eco-icon"></i>
+                    <h4>Flexible</h4>
+                    <p>Large choix d'horaires et de destinations pour s'adapter 
+                    à votre planning et vos besoins.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="container my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <div class="card">
+                <div class="card-body p-5">
+                    <h3 class="fw-bold mb-4">
+                        <i class="fas fa-rocket text-primary me-2"></i>
+                        Rejoignez l'aventure EcoRide
+                    </h3>
+                    <p class="lead mb-4">
+                        Inscrivez-vous dès maintenant et bénéficiez de 20 crédits gratuits 
+                        pour commencer vos premiers covoiturages écologiques !
+                    </p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{{ path('app_login') }}" class="btn btn-eco">
+                            <i class="fas fa-user-plus me-2"></i>S'inscrire
+                        </a>
+                        <a href="#covoiturages" class="btn btn-outline-success">
+                            <i class="fas fa-search me-2"></i>Explorer les trajets
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

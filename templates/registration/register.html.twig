@@ -1,0 +1,160 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <i class="fas fa-leaf text-success" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <h2 class="fw-bold text-success">Rejoignez EcoRide</h2>
+                        <p class="text-muted">Créez votre compte et recevez <span class="fw-bold text-success">20 crédits gratuits</span> ! 🎁</p>
+                    </div>
+
+                    <!-- Avantages -->
+                    <div class="row text-center mb-4">
+                        <div class="col-4">
+                            <i class="fas fa-gift text-success fa-2x mb-2"></i>
+                            <p class="small mb-0">20 crédits offerts</p>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-leaf text-success fa-2x mb-2"></i>
+                            <p class="small mb-0">100% écologique</p>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-users text-success fa-2x mb-2"></i>
+                            <p class="small mb-0">Communauté active</p>
+                        </div>
+                    </div>
+
+                    <hr class="mb-4">
+
+                    <!-- Formulaire d'inscription -->
+                    {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
+                        
+                        <!-- Pseudo -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-user text-success me-2"></i>{{ form_label(registrationForm.pseudo) }}
+                            </label>
+                            {{ form_widget(registrationForm.pseudo) }}
+                            {{ form_errors(registrationForm.pseudo) }}
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-envelope text-success me-2"></i>{{ form_label(registrationForm.email) }}
+                            </label>
+                            {{ form_widget(registrationForm.email) }}
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
+
+                        <!-- Mot de passe -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-lock text-success me-2"></i>{{ form_label(registrationForm.plainPassword.first) }}
+                            </label>
+                            {{ form_widget(registrationForm.plainPassword.first) }}
+                            <div class="form-text">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Minimum 8 caractères avec une majuscule, une minuscule et un chiffre
+                                </small>
+                            </div>
+                            {{ form_errors(registrationForm.plainPassword.first) }}
+                        </div>
+
+                        <!-- Confirmation mot de passe -->
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-lock text-success me-2"></i>{{ form_label(registrationForm.plainPassword.second) }}
+                            </label>
+                            {{ form_widget(registrationForm.plainPassword.second) }}
+                            {{ form_errors(registrationForm.plainPassword.second) }}
+                        </div>
+
+                        <!-- Conditions d'utilisation -->
+                        <div class="form-check mb-4">
+                            {{ form_widget(registrationForm.agreeTerms) }}
+                            <label for="{{ registrationForm.agreeTerms.vars.id }}" class="form-check-label">
+                                {{ form_label(registrationForm.agreeTerms) }}
+                                <a href="#" class="text-success text-decoration-none">conditions d'utilisation</a> et la 
+                                <a href="#" class="text-success text-decoration-none">politique de confidentialité</a>
+                            </label>
+                            {{ form_errors(registrationForm.agreeTerms) }}
+                        </div>
+
+                        <!-- Bouton d'inscription -->
+                        <button type="submit" class="btn btn-eco w-100 mb-4">
+                            <i class="fas fa-user-plus me-2"></i>
+                            Créer mon compte EcoRide
+                        </button>
+
+                    {{ form_end(registrationForm) }}
+
+                    <!-- Lien de connexion -->
+                    <div class="text-center">
+                        <hr class="my-4">
+                        <p class="text-muted mb-2">Déjà membre ?</p>
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-success">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Se connecter
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sécurité -->
+            <div class="text-center mt-4">
+                <div class="row g-3">
+                    <div class="col-4">
+                        <div class="text-muted">
+                            <i class="fas fa-shield-alt fa-2x mb-2"></i>
+                            <p class="small mb-0">Données<br>sécurisées</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted">
+                            <i class="fas fa-user-shield fa-2x mb-2"></i>
+                            <p class="small mb-0">Profils<br>vérifiés</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted">
+                            <i class="fas fa-heart fa-2x mb-2"></i>
+                            <p class="small mb-0">Communauté<br>bienveillante</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-control:focus {
+    border-color: var(--eco-green);
+    box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: var(--eco-green);
+    border-color: var(--eco-green);
+}
+
+.invalid-feedback {
+    display: block;
+}
+
+.form-error {
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+}
+</style>
+{% endblock %}

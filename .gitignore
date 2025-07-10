@@ -1,0 +1,26 @@
+
+# Fichiers Symfony à ignorer
+/vendor/
+/var/
+/public/bundles/
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/build/
+/node_modules/
+/.phpunit.result.cache
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# IDE
+/.idea/
+/.vscode/
+*.swp
+*.swo
+
+# Logs
+/var/log/
+*.log

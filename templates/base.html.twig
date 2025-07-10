@@ -1,0 +1,201 @@
+.nav-link.active {
+                    color: var(--eco-green) !important;
+                    background: rgba(34, 197, 94, 0.1);
+                    border-radius: 8px;
+                }
+
+                .nav-link {
+                    transition: all 0.3s ease;
+                    margin: 0 5px;
+                    padding: 8px 15px !important;
+                    border-radius: 8px;
+                }
+
+                .nav-link:hover {
+                    background: rgba(34, 197, 94, 0.05);
+                    color: var(--eco-green);
+                }<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}EcoRide - Covoiturage écologique{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🌱</text></svg>">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% block stylesheets %}
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+            <style>
+                :root {
+                    --eco-green: #22c55e;
+                    --eco-dark-green: #16a34a;
+                    --eco-light-green: #dcfce7;
+                    --eco-blue: #0ea5e9;
+                    --eco-gray: #6b7280;
+                }
+
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(135deg, var(--eco-light-green) 0%, #f0fdf4 100%);
+                    min-height: 100vh;
+                }
+
+                .navbar {
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(10px);
+                    box-shadow: 0 2px 20px rgba(34, 197, 94, 0.1);
+                }
+
+                .navbar-brand {
+                    font-weight: 700;
+                    color: var(--eco-green) !important;
+                    font-size: 1.5rem;
+                }
+
+                .btn-eco {
+                    background: linear-gradient(45deg, var(--eco-green), var(--eco-blue));
+                    border: none;
+                    color: white;
+                    font-weight: 600;
+                    padding: 12px 30px;
+                    border-radius: 25px;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+                }
+
+                .btn-eco:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+                    color: white;
+                }
+
+                .card {
+                    border: none;
+                    border-radius: 20px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                    backdrop-filter: blur(10px);
+                    background: rgba(255, 255, 255, 0.9);
+                }
+
+                .hero-section {
+                    background: linear-gradient(135deg, var(--eco-green) 0%, var(--eco-blue) 100%);
+                    color: white;
+                    padding: 80px 0;
+                    border-radius: 0 0 50px 50px;
+                    margin-bottom: 50px;
+                }
+
+                .search-box {
+                    background: white;
+                    border-radius: 15px;
+                    padding: 30px;
+                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+                    margin-top: -30px;
+                    position: relative;
+                    z-index: 10;
+                }
+
+                .form-control {
+                    border-radius: 10px;
+                    border: 2px solid #e5e7eb;
+                    padding: 12px 15px;
+                    transition: all 0.3s ease;
+                }
+
+                .form-control:focus {
+                    border-color: var(--eco-green);
+                    box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+                }
+
+                .footer {
+                    background: #1f2937;
+                    color: white;
+                    padding: 40px 0;
+                    margin-top: 80px;
+                }
+
+                .eco-icon {
+                    color: var(--eco-green);
+                    font-size: 3rem;
+                    margin-bottom: 20px;
+                }
+
+                .feature-card {
+                    text-align: center;
+                    padding: 30px;
+                    transition: transform 0.3s ease;
+                }
+
+                .feature-card:hover {
+                    transform: translateY(-5px);
+                }
+            </style>
+        {% endblock %}
+    </head>
+    <body>
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="{{ path('app_home') }}">
+                    <i class="fas fa-leaf me-2"></i>EcoRide
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.get('_route') == 'app_home' ? 'active fw-bold' : '' }}" href="{{ path('app_home') }}">
+                                <i class="fas fa-home me-1"></i>Accueil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.get('_route') == 'app_covoiturages' ? 'active fw-bold' : '' }}" href="{{ path('app_covoiturages') }}">
+                                <i class="fas fa-car me-1"></i>Covoiturages
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.get('_route') == 'app_contact' ? 'active fw-bold' : '' }}" href="{{ path('app_contact') }}">
+                                <i class="fas fa-envelope me-1"></i>Contact
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.get('_route') == 'app_login' ? 'active fw-bold' : '' }}" href="{{ path('app_login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Connexion
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main style="padding-top: 76px;">
+            {% block body %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-leaf me-2"></i>EcoRide</h5>
+                        <p>Ensemble pour des déplacements plus verts et économiques.</p>
+                        <p><i class="fas fa-envelope me-2"></i>contact@ecoride.fr</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <a href="#mentions-legales" class="text-white text-decoration-none">
+                            <i class="fas fa-info-circle me-1"></i>Mentions légales
+                        </a>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <div class="text-center">
+                    <p>&copy; 2025 EcoRide. Tous droits réservés.</p>
+                </div>
+            </div>
+        </footer>
+
+        {% block javascripts %}
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        {% endblock %}
+    </body>
+</html>

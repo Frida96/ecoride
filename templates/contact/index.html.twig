@@ -1,0 +1,153 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="fw-bold">
+                    <i class="fas fa-envelope text-success me-3"></i>
+                    Contactez-nous
+                </h1>
+                <p class="lead text-muted">
+                    Une question ? Une suggestion ? Nous sommes là pour vous aider !
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Informations de contact -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-4">
+                                <i class="fas fa-info-circle text-primary me-2"></i>
+                                Nos coordonnées
+                            </h4>
+                            
+                            <div class="mb-3">
+                                <i class="fas fa-envelope text-success me-3"></i>
+                                <strong>Email :</strong><br>
+                                <a href="mailto:contact@ecoride.fr" class="text-decoration-none">
+                                    contact@ecoride.fr
+                                </a>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <i class="fas fa-map-marker-alt text-success me-3"></i>
+                                <strong>Adresse :</strong><br>
+                                123 Rue de l'Écologie<br>
+                                75001 Paris, France
+                            </div>
+                            
+                            <div class="mb-3">
+                                <i class="fas fa-clock text-success me-3"></i>
+                                <strong>Horaires :</strong><br>
+                                Lundi - Vendredi : 9h - 18h<br>
+                                Samedi : 10h - 16h
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire de contact -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-4">
+                                <i class="fas fa-paper-plane text-primary me-2"></i>
+                                Envoyez-nous un message
+                            </h4>
+                            
+                            <form>
+                                <div class="mb-3">
+                                    <label for="nom" class="form-label">Nom complet</label>
+                                    <input type="text" class="form-control" id="nom" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="sujet" class="form-label">Sujet</label>
+                                    <select class="form-control" id="sujet" required>
+                                        <option value="">Choisissez un sujet</option>
+                                        <option value="question">Question générale</option>
+                                        <option value="probleme">Problème technique</option>
+                                        <option value="suggestion">Suggestion</option>
+                                        <option value="partenariat">Partenariat</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message</label>
+                                    <textarea class="form-control" id="message" rows="4" required></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-eco w-100">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    Envoyer le message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section FAQ -->
+            <div class="card mt-5">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4">
+                        <i class="fas fa-question-circle text-primary me-2"></i>
+                        Questions fréquentes
+                    </h4>
+                    
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    Comment fonctionne le système de crédit ?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Vous recevez 20 crédits gratuits à l'inscription. Chaque trajet coûte le prix fixé par le conducteur en crédits.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    Qu'est-ce qu'un voyage écologique ?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Un voyage est considéré comme écologique s'il est effectué avec un véhicule électrique.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    Comment devenir conducteur ?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Créez votre compte, ajoutez vos informations de véhicule dans votre espace personnel et commencez à proposer des trajets !
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
