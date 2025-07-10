@@ -22,9 +22,9 @@ class TrajetRepository extends ServiceEntityRepository
     }
 
     /**
-     * Trouve les trajets disponibles selon les critères de recherche
+     * Trouve les trajets disponibles selon les critères de recherche et filtres
      */
-    public function findTrajetsDisponibles(string $depart, string $arrivee, \DateTime $date): array
+    public function findTrajetsDisponibles(string $depart, string $arrivee, \DateTime $date, array $filtres = []): array
     {
         $dateDebut = clone $date;
         $dateDebut->setTime(0, 0, 0);
@@ -32,7 +32,7 @@ class TrajetRepository extends ServiceEntityRepository
         $dateFin = clone $date;
         $dateFin->setTime(23, 59, 59);
 
-        return $this->createQueryBuilder('t')
+        $qb = $this->createQueryBuilder('t')
             ->leftJoin('t.chauffeur', 'c')
             ->leftJoin('t.vehicule', 'v')
             ->leftJoin('t.participations', 'p')
@@ -40,16 +40,55 @@ class TrajetRepository extends ServiceEntityRepository
             ->andWhere('LOWER(t.lieuArrivee) LIKE LOWER(:arrivee)')
             ->andWhere('t.dateDepart BETWEEN :dateDebut AND :dateFin')
             ->andWhere('t.statut = :statut')
-            ->groupBy('t.id')
-            ->having('t.nbPlaces > COUNT(p.id)')
             ->setParameter('depart', '%' . $depart . '%')
             ->setParameter('arrivee', '%' . $arrivee . '%')
             ->setParameter('dateDebut', $dateDebut)
             ->setParameter('dateFin', $dateFin)
-            ->setParameter('statut', 'en_attente')
+            ->setParameter('statut', 'en_attente');
+
+        // Filtre écologique
+        if (!empty($filtres['ecologique'])) {
+            $qb->andWhere('LOWER(v.energie) = :energie')
+               ->setParameter('energie', 'electrique');
+        }
+
+        // Filtre prix maximum
+        if (!empty($filtres['prix_max']) && is_numeric($filtres['prix_max'])) {
+            $qb->andWhere('t.prix <= :prixMax')
+               ->setParameter('prixMax', (int)$filtres['prix_max']);
+        }
+
+        // Filtre durée maximum (en heures)
+        if (!empty($filtres['duree_max']) && is_numeric($filtres['duree_max'])) {
+            $qb->andWhere('TIMESTAMPDIFF(HOUR, t.dateDepart, t.dateArrivee) <= :dureeMax')
+               ->setParameter('dureeMax', (int)$filtres['duree_max']);
+        }
+
+        return $qb->groupBy('t.id')
+            ->having('t.nbPlaces > COUNT(p.id)')
             ->orderBy('t.dateDepart', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Trouve les trajets disponibles avec filtre sur la note du chauffeur
+     */
+    public function findTrajetsAvecNoteMinimale(array $trajets, float $noteMin): array
+    {
+        if (empty($trajets) || $noteMin <= 0) {
+            return $trajets;
+        }
+
+        $trajetsFiltrés = [];
+        foreach ($trajets as $trajet) {
+            $noteChauffeur = $this->getNoteMoyenneChauffeur($trajet->getChauffeur()->getId());
+            if ($noteChauffeur >= $noteMin) {
+                $trajetsFiltrés[] = $trajet;
+            }
+        }
+
+        return $trajetsFiltrés;
     }
 
     /**

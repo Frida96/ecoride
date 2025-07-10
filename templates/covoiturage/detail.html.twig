@@ -1,0 +1,318 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ trajet.lieuDepart }} → {{ trajet.lieuArrivee }} - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Bouton retour -->
+        <div class="col-12 mb-4">
+            <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Retour à la recherche
+            </a>
+        </div>
+        
+        <!-- Informations principales du trajet -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h1 class="fw-bold h3 mb-2">
+                                {{ trajet.lieuDepart }} → {{ trajet.lieuArrivee }}
+                            </h1>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-calendar me-2"></i>
+                                {{ trajet.dateDepart|date('l d F Y') }}
+                            </p>
+                        </div>
+                        {% if trajet.isEcologique %}
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-leaf me-1"></i>Trajet écologique
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Horaires et durée -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <i class="fas fa-circle text-success fs-4 mb-2"></i>
+                                <h6 class="fw-bold">Départ</h6>
+                                <p class="mb-1">{{ trajet.lieuDepart }}</p>
+                                <strong>{{ trajet.dateDepart|date('H:i') }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3">
+                                <i class="fas fa-clock text-primary fs-4 mb-2"></i>
+                                <h6 class="fw-bold">Durée</h6>
+                                <strong>{{ trajet.dureeFormatee }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <i class="fas fa-map-marker-alt text-primary fs-4 mb-2"></i>
+                                <h6 class="fw-bold">Arrivée</h6>
+                                <p class="mb-1">{{ trajet.lieuArrivee }}</p>
+                                <strong>{{ trajet.dateArrivee|date('H:i') }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informations générales -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-users text-success me-2 fs-5"></i>
+                                <div>
+                                    <small class="text-muted d-block">Places disponibles</small>
+                                    <strong>{{ trajet.placesRestantes }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-euro-sign text-warning me-2 fs-5"></i>
+                                <div>
+                                    <small class="text-muted d-block">Prix</small>
+                                    <strong>{{ trajet.prix }} crédits</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-car text-info me-2 fs-5"></i>
+                                <div>
+                                    <small class="text-muted d-block">Véhicule</small>
+                                    <strong>{{ trajet.vehicule.marque }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-star text-warning me-2 fs-5"></i>
+                                <div>
+                                    <small class="text-muted d-block">Note chauffeur</small>
+                                    <strong>{{ noteMoyenne > 0 ? noteMoyenne ~ '/5' : 'Nouveau' }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Détails du véhicule -->
+            <div class="card mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">
+                        <i class="fas fa-car text-primary me-2"></i>
+                        Véhicule
+                    </h4>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="vehicle-info">
+                                <h6 class="fw-bold">{{ trajet.vehicule.marque }} {{ trajet.vehicule.modele }}</h6>
+                                <div class="d-flex gap-3 text-muted">
+                                    <span><i class="fas fa-palette me-1"></i>{{ trajet.vehicule.couleur }}</span>
+                                    <span><i class="fas fa-gas-pump me-1"></i>{{ trajet.vehicule.energie|title }}</span>
+                                </div>
+                                <small class="text-muted">
+                                    Immatriculé le {{ trajet.vehicule.datePremierImmatriculation|date('d/m/Y') }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {% if trajet.vehicule.energie == 'electrique' %}
+                                <div class="alert alert-success">
+                                    <i class="fas fa-leaf me-2"></i>
+                                    <strong>Véhicule 100% électrique</strong><br>
+                                    <small>Zéro émission pour un trajet respectueux de l'environnement</small>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-car me-2"></i>
+                                    <strong>Véhicule {{ trajet.vehicule.energie }}</strong><br>
+                                    <small>Trajet en covoiturage pour réduire l'impact environnemental</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Avis des passagers -->
+            {% if avis|length > 0 %}
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-3">
+                            <i class="fas fa-comments text-warning me-2"></i>
+                            Avis des passagers ({{ avis|length }})
+                        </h4>
+
+                        <div class="row g-4">
+                            {% for avisItem in avis %}
+                                <div class="col-12">
+                                    <div class="avis-item p-3 border rounded">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-small me-3">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="fw-bold mb-1">{{ avisItem.passager.pseudo }}</h6>
+                                                    <div class="stars">
+                                                        {% for i in 1..5 %}
+                                                            <i class="fas fa-star {{ i <= avisItem.note ? 'text-warning' : 'text-muted' }}"></i>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span class="badge bg-light text-dark">{{ avisItem.note }}/5</span>
+                                        </div>
+                                        {% if avisItem.commentaire %}
+                                            <p class="mb-0 text-muted">{{ avisItem.commentaire }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar - Chauffeur et actions -->
+        <div class="col-lg-4">
+            <!-- Profil chauffeur -->
+            <div class="card mb-4">
+                <div class="card-body p-4 text-center">
+                    <div class="avatar-large mx-auto mb-3">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h5 class="fw-bold">{{ trajet.chauffeur.pseudo }}</h5>
+                    
+                    {% if noteMoyenne > 0 %}
+                        <div class="stars mb-3">
+                            {% for i in 1..5 %}
+                                <i class="fas fa-star {{ i <= noteMoyenne ? 'text-warning' : 'text-muted' }}"></i>
+                            {% endfor %}
+                            <span class="text-muted ms-2">({{ noteMoyenne }}/5)</span>
+                        </div>
+                    {% else %}
+                        <div class="mb-3">
+                            <span class="badge bg-light text-dark">Nouveau chauffeur</span>
+                        </div>
+                    {% endif %}
+
+                    <!-- Préférences du chauffeur -->
+                    {% if trajet.chauffeur.preferences %}
+                        <div class="preferences mb-3">
+                            <h6 class="fw-bold text-start">Préférences :</h6>
+                            <div class="text-start">
+                                {% set preferences = trajet.chauffeur.preferences|split(', ') %}
+                                {% for preference in preferences %}
+                                    <div class="d-flex justify-content-between border-bottom py-1">
+                                        {% set parts = preference|split(': ') %}
+                                        <span class="text-muted">{{ parts[0] }}:</span>
+                                        <strong class="{{ parts[1] == 'Oui' ? 'text-success' : 'text-danger' }}">
+                                            {{ parts[1] }}
+                                        </strong>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="price-display text-center mb-4">
+                        <div class="price">
+                            <span class="fw-bold text-success" style="font-size: 2.5rem;">{{ trajet.prix }}</span>
+                            <span class="text-muted fs-5">crédits</span>
+                        </div>
+                    </div>
+
+                    {% if trajet.placesRestantes > 0 %}
+                        <button class="btn btn-eco btn-lg w-100 mb-3">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            Participer à ce trajet
+                        </button>
+                        <p class="text-center text-muted small">
+                            Plus que {{ trajet.placesRestantes }} place{{ trajet.placesRestantes > 1 ? 's' : '' }} disponible{{ trajet.placesRestantes > 1 ? 's' : '' }} !
+                        </p>
+                    {% else %}
+                        <button class="btn btn-secondary btn-lg w-100 mb-3" disabled>
+                            <i class="fas fa-times-circle me-2"></i>
+                            Trajet complet
+                        </button>
+                    {% endif %}
+
+                    <div class="text-center">
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-share-alt me-1"></i>Partager
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(45deg, var(--eco-green), var(--eco-blue));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+}
+
+.avatar-small {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(45deg, var(--eco-green), var(--eco-blue));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+.vehicle-info {
+    background: rgba(34, 197, 94, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--eco-green);
+}
+
+.avis-item {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.price-display .price {
+    background: rgba(34, 197, 94, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.preferences {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.stars .fa-star {
+    font-size: 1.1rem;
+}
+</style>
+{% endblock %}

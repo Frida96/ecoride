@@ -41,6 +41,9 @@ class CreateTestDataCommand extends Command
         // Créer des trajets de test
         $trajets = $this->createTestTrajets($io, $users, $vehicles);
 
+        // Créer des avis de test
+        $avis = $this->createTestAvis($io, $users);
+
         $this->entityManager->flush();
 
         $io->success('✅ Données de test créées avec succès !');
@@ -48,6 +51,7 @@ class CreateTestDataCommand extends Command
             ['Utilisateurs', count($users)],
             ['Véhicules', count($vehicles)],
             ['Trajets', count($trajets)],
+            ['Avis', count($avis)],
         ]);
 
         return Command::SUCCESS;
@@ -155,5 +159,34 @@ class CreateTestDataCommand extends Command
         }
 
         return $trajets;
+    }
+
+    private function createTestAvis(SymfonyStyle $io, array $users): array
+    {
+        $io->section('⭐ Création des avis...');
+        
+        $avisData = [
+            ['chauffeur_idx' => 0, 'passager_idx' => 4, 'note' => 5, 'commentaire' => 'Excellente conduite, très ponctuel et véhicule propre !'],
+            ['chauffeur_idx' => 0, 'passager_idx' => 2, 'note' => 4, 'commentaire' => 'Trajet agréable, chauffeur sympa.'],
+            ['chauffeur_idx' => 1, 'passager_idx' => 4, 'note' => 5, 'commentaire' => 'Parfait ! Conduite écologique et conversation intéressante.'],
+            ['chauffeur_idx' => 1, 'passager_idx' => 3, 'note' => 4, 'commentaire' => 'Très bien, à recommander.'],
+            ['chauffeur_idx' => 2, 'passager_idx' => 4, 'note' => 3, 'commentaire' => 'Correct, rien à redire.'],
+            ['chauffeur_idx' => 3, 'passager_idx' => 4, 'note' => 5, 'commentaire' => 'Chauffeur très professionnel, trajet sans problème.'],
+        ];
+
+        $avisList = [];
+        foreach ($avisData as $avisItem) {
+            $avis = new \App\Entity\Avis();
+            $avis->setChauffeur($users[$avisItem['chauffeur_idx']])
+                 ->setPassager($users[$avisItem['passager_idx']])
+                 ->setNote($avisItem['note'])
+                 ->setCommentaire($avisItem['commentaire'])
+                 ->setValide(true);
+
+            $this->entityManager->persist($avis);
+            $avisList[] = $avis;
+        }
+
+        return $avisList;
     }
 }

@@ -190,4 +190,29 @@ class Trajet
     {
         return $this->vehicule && $this->vehicule->isEcologique();
     }
+
+    public function getDureeEnHeures(): float
+    {
+        if (!$this->dateDepart || !$this->dateArrivee) {
+            return 0;
+        }
+        
+        $interval = $this->dateDepart->diff($this->dateArrivee);
+        return $interval->h + ($interval->i / 60);
+    }
+
+    public function getDureeFormatee(): string
+    {
+        $duree = $this->getDureeEnHeures();
+        $heures = floor($duree);
+        $minutes = round(($duree - $heures) * 60);
+        
+        if ($heures > 0 && $minutes > 0) {
+            return $heures . 'h' . sprintf('%02d', $minutes);
+        } elseif ($heures > 0) {
+            return $heures . 'h';
+        } else {
+            return $minutes . 'min';
+        }
+    }
 }
