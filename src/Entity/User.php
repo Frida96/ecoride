@@ -10,18 +10,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-#[UniqueEntity(
-    fields: ['email'],
-    message: 'Il existe déjà un compte avec cet email.'
-)]
-#[UniqueEntity(
-    fields: ['pseudo'],
-    message: 'Ce pseudo est déjà utilisé.'
-)]
-
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'utilisateur')]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte avec cet email.')]
+#[UniqueEntity(fields: ['pseudo'], message: 'Ce pseudo est déjà utilisé.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -198,13 +190,70 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->trajetsConduits;
     }
 
+    public function addTrajetsConduit(Trajet $trajetsConduit): static
+    {
+        if (!$this->trajetsConduits->contains($trajetsConduit)) {
+            $this->trajetsConduits->add($trajetsConduit);
+            $trajetsConduit->setChauffeur($this);
+        }
+        return $this;
+    }
+
+    public function removeTrajetsConduit(Trajet $trajetsConduit): static
+    {
+        if ($this->trajetsConduits->removeElement($trajetsConduit)) {
+            if ($trajetsConduit->getChauffeur() === $this) {
+                $trajetsConduit->setChauffeur(null);
+            }
+        }
+        return $this;
+    }
+
     public function getParticipations(): Collection
     {
         return $this->participations;
     }
 
+    public function addParticipation(Participation $participation): static
+    {
+        if (!$this->participations->contains($participation)) {
+            $this->participations->add($participation);
+            $participation->setPassager($this);
+        }
+        return $this;
+    }
+
+    public function removeParticipation(Participation $participation): static
+    {
+        if ($this->participations->removeElement($participation)) {
+            if ($participation->getPassager() === $this) {
+                $participation->setPassager(null);
+            }
+        }
+        return $this;
+    }
+
     public function getAvisLaisses(): Collection
     {
         return $this->avisLaisses;
+    }
+
+    public function addAvisLaisse(Avis $avisLaisse): static
+    {
+        if (!$this->avisLaisses->contains($avisLaisse)) {
+            $this->avisLaisses->add($avisLaisse);
+            $avisLaisse->setPassager($this);
+        }
+        return $this;
+    }
+
+    public function removeAvisLaisse(Avis $avisLaisse): static
+    {
+        if ($this->avisLaisses->removeElement($avisLaisse)) {
+            if ($avisLaisse->getPassager() === $this) {
+                $avisLaisse->setPassager(null);
+            }
+        }
+        return $this;
     }
 }

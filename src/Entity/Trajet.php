@@ -215,4 +215,19 @@ class Trajet
             return $minutes . 'min';
         }
     }
+
+    public function userParticipe($user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        foreach ($this->participations as $participation) {
+            if ($participation->getPassager() === $user) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

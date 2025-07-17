@@ -158,11 +158,26 @@
                                 <i class="fas fa-envelope me-1"></i>Contact
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ app.request.get('_route') == 'app_login' ? 'active fw-bold' : '' }}" href="{{ path('app_login') }}">
-                                <i class="fas fa-sign-in-alt me-1"></i>Connexion
-                            </a>
-                        </li>
+                        {% if app.user %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user me-1"></i>{{ app.user.pseudo }}
+                                    <span class="badge bg-success ms-1">{{ app.user.credit }} 💳</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Mon profil</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-history me-2"></i>Mes trajets</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Déconnexion</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link {{ app.request.get('_route') == 'app_login' ? 'active fw-bold' : '' }}" href="{{ path('app_login') }}">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Connexion
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

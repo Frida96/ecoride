@@ -237,19 +237,51 @@
                         </div>
                     </div>
 
-                    {% if trajet.placesRestantes > 0 %}
-                        <button class="btn btn-eco btn-lg w-100 mb-3">
-                            <i class="fas fa-plus-circle me-2"></i>
-                            Participer à ce trajet
-                        </button>
-                        <p class="text-center text-muted small">
-                            Plus que {{ trajet.placesRestantes }} place{{ trajet.placesRestantes > 1 ? 's' : '' }} disponible{{ trajet.placesRestantes > 1 ? 's' : '' }} !
-                        </p>
+                    {% if app.user %}
+                        {% if trajet.chauffeur == app.user %}
+                            <div class="alert alert-info text-center">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>C'est votre trajet</strong><br>
+                                <small>Vous ne pouvez pas participer à votre propre trajet</small>
+                            </div>
+                        {% elseif trajet.userParticipe(app.user) %}
+                            <div class="alert alert-success text-center">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>Vous participez déjà à ce trajet</strong><br>
+                                <small>Rendez-vous le {{ trajet.dateDepart|date('d/m/Y à H:i') }} !</small>
+                            </div>
+                        {% elseif trajet.placesRestantes > 0 %}
+                            {% if app.user.credit >= trajet.prix %}
+                                <button class="btn btn-eco btn-lg w-100 mb-3" data-bs-toggle="modal" data-bs-target="#confirmationModal">
+                                    <i class="fas fa-plus-circle me-2"></i>
+                                    Participer à ce trajet
+                                </button>
+                                <p class="text-center text-muted small">
+                                    Plus que {{ trajet.placesRestantes }} place{{ trajet.placesRestantes > 1 ? 's' : '' }} disponible{{ trajet.placesRestantes > 1 ? 's' : '' }} !
+                                </p>
+                            {% else %}
+                                <button class="btn btn-warning btn-lg w-100 mb-3" disabled>
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Crédits insuffisants
+                                </button>
+                                <p class="text-center text-muted small">
+                                    Il vous faut {{ trajet.prix }} crédits (vous en avez {{ app.user.credit }})
+                                </p>
+                            {% endif %}
+                        {% else %}
+                            <button class="btn btn-secondary btn-lg w-100 mb-3" disabled>
+                                <i class="fas fa-times-circle me-2"></i>
+                                Trajet complet
+                            </button>
+                        {% endif %}
                     {% else %}
-                        <button class="btn btn-secondary btn-lg w-100 mb-3" disabled>
-                            <i class="fas fa-times-circle me-2"></i>
-                            Trajet complet
-                        </button>
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-lg w-100 mb-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Se connecter pour participer
+                        </a>
+                        <p class="text-center text-muted small">
+                            Créez un compte et recevez 20 crédits gratuits !
+                        </p>
                     {% endif %}
 
                     <div class="text-center">
@@ -262,6 +294,73 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de confirmation -->
+{% if app.user and not trajet.userParticipe(app.user) and trajet.chauffeur != app.user and trajet.placesRestantes > 0 and app.user.credit >= trajet.prix %}
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="confirmationModalLabel">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Confirmer votre participation
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center mb-4">
+                    <i class="fas fa-car text-success" style="font-size: 3rem;"></i>
+                </div>
+                
+                <h5 class="text-center mb-4">
+                    {{ trajet.lieuDepart }} → {{ trajet.lieuArrivee }}
+                </h5>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="fas fa-calendar text-primary mb-2"></i>
+                            <div><strong>{{ trajet.dateDepart|date('d/m/Y') }}</strong></div>
+                            <small class="text-muted">{{ trajet.dateDepart|date('H:i') }}</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="fas fa-euro-sign text-warning mb-2"></i>
+                            <div><strong>{{ trajet.prix }} crédits</strong></div>
+                            <small class="text-muted">Seront débités</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle me-2"></i>Récapitulatif :</h6>
+                    <ul class="mb-0">
+                        <li>Crédits actuels : <strong>{{ app.user.credit }}</strong></li>
+                        <li>Coût du trajet : <strong>{{ trajet.prix }}</strong></li>
+                        <li>Crédits après participation : <strong>{{ app.user.credit - trajet.prix }}</strong></li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Attention :</strong> Cette action est définitive. Les crédits seront immédiatement débités de votre compte.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Annuler
+                </button>
+                <form method="POST" action="{{ path('app_covoiturage_participer', {id: trajet.id}) }}" class="d-inline">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check me-2"></i>Confirmer ma participation
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <style>
 .avatar-large {
