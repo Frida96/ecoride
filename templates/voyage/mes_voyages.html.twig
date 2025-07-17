@@ -1,0 +1,301 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes voyages - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Header -->
+        <div class="col-12 mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="fw-bold">
+                        <i class="fas fa-route text-success me-3"></i>
+                        Mes voyages proposés
+                    </h1>
+                    <p class="text-muted">Gérez vos trajets en tant que chauffeur</p>
+                </div>
+                <a href="{{ path('app_voyage_proposer') }}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Proposer un voyage
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="col-12 mb-4">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-route text-primary"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="fw-bold mb-0">{{ trajets|length }}</h3>
+                            <p class="text-muted mb-0">Voyage{{ trajets|length > 1 ? 's' : '' }} créé{{ trajets|length > 1 ? 's' : '' }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock text-warning"></i>
+                        </div>
+                        <div class="stat-content">
+                            {% set enAttente = trajets|filter(t => t.statut == 'en_attente')|length %}
+                            <h3 class="fw-bold mb-0">{{ enAttente }}</h3>
+                            <p class="text-muted mb-0">En attente</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users text-success"></i>
+                        </div>
+                        <div class="stat-content">
+                            {% set totalParticipants = 0 %}
+                            {% for trajet in trajets %}
+                                {% set totalParticipants = totalParticipants + trajet.participations|length %}
+                            {% endfor %}
+                            <h3 class="fw-bold mb-0">{{ totalParticipants }}</h3>
+                            <p class="text-muted mb-0">Passager{{ totalParticipants > 1 ? 's' : '' }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-coins text-warning"></i>
+                        </div>
+                        <div class="stat-content">
+                            {% set totalGains = 0 %}
+                            {% for trajet in trajets %}
+                                {% set totalGains = totalGains + (trajet.participations|length * trajet.prix) %}
+                            {% endfor %}
+                            <h3 class="fw-bold mb-0">{{ totalGains }}</h3>
+                            <p class="text-muted mb-0">Crédits gagnés</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des voyages -->
+        {% if trajets|length > 0 %}
+            <div class="col-12">
+                <div class="row g-4">
+                    {% for trajet in trajets %}
+                        <div class="col-lg-6 col-xl-4">
+                            <div class="card voyage-card h-100">
+                                <div class="card-body p-4">
+                                    <!-- Statut -->
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <span class="badge bg-{{ trajet.statut == 'en_attente' ? 'warning' : (trajet.statut == 'en_cours' ? 'primary' : 'success') }}">
+                                            {% if trajet.statut == 'en_attente' %}
+                                                <i class="fas fa-clock me-1"></i>En attente
+                                            {% elseif trajet.statut == 'en_cours' %}
+                                                <i class="fas fa-play me-1"></i>En cours
+                                            {% else %}
+                                                <i class="fas fa-check me-1"></i>Terminé
+                                            {% endif %}
+                                        </span>
+                                        {% if trajet.isEcologique %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-leaf me-1"></i>Éco
+                                            </span>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Itinéraire -->
+                                    <div class="voyage-itineraire mb-3">
+                                        <h5 class="fw-bold mb-2">
+                                            {{ trajet.lieuDepart }} → {{ trajet.lieuArrivee }}
+                                        </h5>
+                                        <div class="voyage-horaires">
+                                            <div class="d-flex justify-content-between text-muted">
+                                                <span>
+                                                    <i class="fas fa-calendar me-1"></i>
+                                                    {{ trajet.dateDepart|date('d/m/Y') }}
+                                                </span>
+                                                <span>
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    {{ trajet.dateDepart|date('H:i') }} - {{ trajet.dateArrivee|date('H:i') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Détails -->
+                                    <div class="voyage-details mb-4">
+                                        <div class="row g-2 text-center">
+                                            <div class="col-4">
+                                                <div class="detail-item">
+                                                    <i class="fas fa-users text-primary"></i>
+                                                    <small class="d-block">{{ trajet.participations|length }}/{{ trajet.nbPlaces }}</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="detail-item">
+                                                    <i class="fas fa-euro-sign text-success"></i>
+                                                    <small class="d-block">{{ trajet.prix }}€</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="detail-item">
+                                                    <i class="fas fa-car text-info"></i>
+                                                    <small class="d-block">{{ trajet.vehicule.marque }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Participants -->
+                                    {% if trajet.participations|length > 0 %}
+                                        <div class="participants mb-3">
+                                            <h6 class="fw-bold mb-2">
+                                                <i class="fas fa-users me-1"></i>
+                                                Passagers ({{ trajet.participations|length }})
+                                            </h6>
+                                            <div class="participants-list">
+                                                {% for participation in trajet.participations %}
+                                                    <div class="participant-item">
+                                                        <div class="participant-avatar">
+                                                            <i class="fas fa-user"></i>
+                                                        </div>
+                                                        <span class="participant-name">{{ participation.passager.pseudo }}</span>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-light mb-3">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            <small>Aucun passager pour le moment</small>
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- Actions -->
+                                    <div class="voyage-actions">
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ path('app_covoiturage_detail', {id: trajet.id}) }}" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-eye me-1"></i>Voir les détails
+                                            </a>
+                                            {% if trajet.statut == 'en_attente' %}
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-outline-secondary btn-sm">
+                                                        <i class="fas fa-edit me-1"></i>Modifier
+                                                    </button>
+                                                    <button class="btn btn-outline-danger btn-sm" 
+                                                            onclick="return confirm('Êtes-vous sûr de vouloir annuler ce voyage ?')">
+                                                        <i class="fas fa-times me-1"></i>Annuler
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <!-- Aucun voyage -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body p-5 text-center">
+                        <i class="fas fa-route text-muted" style="font-size: 5rem; margin-bottom: 30px; opacity: 0.3;"></i>
+                        <h3 class="fw-bold mb-3">Aucun voyage proposé</h3>
+                        <p class="lead text-muted mb-4">
+                            Vous n'avez pas encore proposé de voyage. Commencez dès maintenant à partager vos trajets !
+                        </p>
+                        <a href="{{ path('app_voyage_proposer') }}" class="btn btn-success btn-lg">
+                            <i class="fas fa-plus me-2"></i>Proposer mon premier voyage
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.stat-card {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(34, 197, 94, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 15px;
+}
+
+.voyage-card {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.voyage-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--eco-green);
+    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);
+}
+
+.detail-item {
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+}
+
+.detail-item i {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.participants-list {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.participant-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.participant-avatar {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--eco-green), var(--eco-blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    margin-right: 10px;
+}
+
+.participant-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.voyage-actions .btn {
+    font-size: 0.85rem;
+}
+</style>
+{% endblock %}

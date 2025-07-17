@@ -166,6 +166,10 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="{{ path('app_profil') }}"><i class="fas fa-user me-2"></i>Mon profil</a></li>
+                                    {% if app.user.role in ['chauffeur', 'passager_chauffeur'] %}
+                                        <li><a class="dropdown-item" href="{{ path('app_voyage_proposer') }}"><i class="fas fa-plus me-2"></i>Proposer un voyage</a></li>
+                                        <li><a class="dropdown-item" href="{{ path('app_mes_voyages') }}"><i class="fas fa-route me-2"></i>Mes voyages</a></li>
+                                    {% endif %}
                                     <li><a class="dropdown-item" href="#"><i class="fas fa-history me-2"></i>Mes trajets</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Déconnexion</a></li>

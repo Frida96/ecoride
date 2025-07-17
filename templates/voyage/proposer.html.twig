@@ -1,0 +1,400 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Proposer un voyage - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="fw-bold">
+                            <i class="fas fa-plus-circle text-success me-3"></i>
+                            Proposer un voyage
+                        </h1>
+                        <p class="text-muted">Partagez votre trajet et gagnez des crédits tout en aidant la planète</p>
+                    </div>
+                    <a href="{{ path('app_profil') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour au profil
+                    </a>
+                </div>
+            </div>
+
+            <!-- Informations importantes -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-euro-sign text-warning"></i>
+                        </div>
+                        <div class="info-content">
+                            <h6 class="fw-bold">Commission plateforme</h6>
+                            <p class="small mb-0">2 crédits prélevés par trajet pour le fonctionnement d'EcoRide</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-leaf text-success"></i>
+                        </div>
+                        <div class="info-content">
+                            <h6 class="fw-bold">Voyage écologique</h6>
+                            <p class="small mb-0">Les véhicules électriques sont mis en avant automatiquement</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-users text-primary"></i>
+                        </div>
+                        <div class="info-content">
+                            <h6 class="fw-bold">Plus de passagers</h6>
+                            <p class="small mb-0">Partagez les frais et réduisez l'impact environnemental</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Formulaire principal -->
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-4">
+                                <i class="fas fa-route text-primary me-2"></i>
+                                Détails du voyage
+                            </h4>
+
+                            {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id': 'voyage-form'}}) }}
+                                
+                                <!-- Itinéraire -->
+                                <div class="section mb-4">
+                                    <h5 class="section-title">
+                                        <i class="fas fa-map-marker-alt text-success me-2"></i>
+                                        Itinéraire
+                                    </h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">{{ form_label(form.lieuDepart) }}</label>
+                                            {{ form_widget(form.lieuDepart) }}
+                                            {{ form_errors(form.lieuDepart) }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">{{ form_label(form.lieuArrivee) }}</label>
+                                            {{ form_widget(form.lieuArrivee) }}
+                                            {{ form_errors(form.lieuArrivee) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Horaires -->
+                                <div class="section mb-4">
+                                    <h5 class="section-title">
+                                        <i class="fas fa-clock text-warning me-2"></i>
+                                        Horaires
+                                    </h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">{{ form_label(form.dateDepart) }}</label>
+                                            {{ form_widget(form.dateDepart) }}
+                                            {{ form_errors(form.dateDepart) }}
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Doit être dans le futur
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">{{ form_label(form.dateArrivee) }}</label>
+                                            {{ form_widget(form.dateArrivee) }}
+                                            {{ form_errors(form.dateArrivee) }}
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Estimation de votre arrivée
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Véhicule et places -->
+                                <div class="section mb-4">
+                                    <h5 class="section-title">
+                                        <i class="fas fa-car text-info me-2"></i>
+                                        Véhicule et capacité
+                                    </h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-8">
+                                            <label class="form-label">{{ form_label(form.vehicule) }}</label>
+                                            {{ form_widget(form.vehicule) }}
+                                            {{ form_errors(form.vehicule) }}
+                                            {% if user.vehicles|length == 0 %}
+                                                <div class="alert alert-warning mt-2">
+                                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                                    <strong>Aucun véhicule !</strong>
+                                                    <a href="{{ path('app_profil_vehicule_ajouter') }}" class="alert-link">
+                                                        Ajoutez un véhicule
+                                                    </a> pour continuer.
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">{{ form_label(form.nbPlaces) }}</label>
+                                            {{ form_widget(form.nbPlaces) }}
+                                            {{ form_errors(form.nbPlaces) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Prix -->
+                                <div class="section mb-4">
+                                    <h5 class="section-title">
+                                        <i class="fas fa-euro-sign text-success me-2"></i>
+                                        Tarification
+                                    </h5>
+                                    <div class="row g-3 align-items-end">
+                                        <div class="col-md-6">
+                                            <label class="form-label">{{ form_label(form.prix) }}</label>
+                                            {{ form_widget(form.prix) }}
+                                            {{ form_errors(form.prix) }}
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Commission EcoRide : 2 crédits
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="price-calculation">
+                                                <h6 class="fw-bold">Vos gains estimés :</h6>
+                                                <div class="calculation-details">
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Prix par passager :</span>
+                                                        <span id="prix-display">0 crédits</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Places disponibles :</span>
+                                                        <span id="places-display">0</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between text-muted">
+                                                        <span>Commission plateforme :</span>
+                                                        <span>-2 crédits</span>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between fw-bold text-success">
+                                                        <span>Gain net maximum :</span>
+                                                        <span id="gain-total">0 crédits</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Boutons -->
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ path('app_profil') }}" class="btn btn-secondary">
+                                        <i class="fas fa-times me-2"></i>Annuler
+                                    </a>
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fas fa-paper-plane me-2"></i>Publier mon voyage
+                                    </button>
+                                </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar conseils -->
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-lightbulb text-warning me-2"></i>
+                                Conseils pour réussir
+                            </h5>
+                            
+                            <div class="conseil-item">
+                                <i class="fas fa-map-marker-alt text-success me-2"></i>
+                                <div>
+                                    <strong>Soyez précis</strong>
+                                    <p class="small mb-0">Indiquez des villes connues pour faciliter la recherche</p>
+                                </div>
+                            </div>
+
+                            <div class="conseil-item">
+                                <i class="fas fa-clock text-warning me-2"></i>
+                                <div>
+                                    <strong>Horaires réalistes</strong>
+                                    <p class="small mb-0">Prévoyez de la marge pour les imprévus</p>
+                                </div>
+                            </div>
+
+                            <div class="conseil-item">
+                                <i class="fas fa-euro-sign text-info me-2"></i>
+                                <div>
+                                    <strong>Prix attractif</strong>
+                                    <p class="small mb-0">Un prix juste attire plus de passagers</p>
+                                </div>
+                            </div>
+
+                            <div class="conseil-item">
+                                <i class="fas fa-leaf text-success me-2"></i>
+                                <div>
+                                    <strong>Véhicule électrique</strong>
+                                    <p class="small mb-0">Privilégié dans les résultats de recherche</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mes véhicules -->
+                    {% if user.vehicles|length > 0 %}
+                        <div class="card mt-4">
+                            <div class="card-body p-4">
+                                <h6 class="fw-bold mb-3">
+                                    <i class="fas fa-car text-primary me-2"></i>
+                                    Mes véhicules
+                                </h6>
+                                {% for vehicle in user.vehicles %}
+                                    <div class="vehicle-item">
+                                        <div class="d-flex align-items-center">
+                                            <div class="vehicle-mini-icon me-2">
+                                                {% if vehicle.energie == 'electrique' %}
+                                                    <i class="fas fa-leaf text-success"></i>
+                                                {% else %}
+                                                    <i class="fas fa-car text-muted"></i>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <strong>{{ vehicle.marque }} {{ vehicle.modele }}</strong>
+                                                <small class="text-muted d-block">{{ vehicle.couleur }} - {{ vehicle.energie|title }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <a href="{{ path('app_profil_vehicule_ajouter') }}" class="btn btn-outline-primary btn-sm w-100 mt-3">
+                                    <i class="fas fa-plus me-1"></i>Ajouter un véhicule
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.info-card {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    height: 100%;
+}
+
+.info-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(34, 197, 94, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.section {
+    border-left: 4px solid var(--eco-green);
+    padding-left: 20px;
+}
+
+.section-title {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.price-calculation {
+    background: rgba(34, 197, 94, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.calculation-details > div {
+    margin-bottom: 5px;
+}
+
+.conseil-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.conseil-item i {
+    margin-top: 2px;
+    width: 20px;
+}
+
+.vehicle-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+}
+
+.vehicle-mini-icon {
+    width: 25px;
+    text-align: center;
+}
+
+.form-control:focus {
+    border-color: var(--eco-green);
+    box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const prixInput = document.getElementById('trajet_prix');
+    const placesInput = document.getElementById('trajet_nbPlaces');
+    
+    function updateCalculation() {
+        const prix = parseInt(prixInput.value) || 0;
+        const places = parseInt(placesInput.value) || 0;
+        
+        document.getElementById('prix-display').textContent = prix + ' crédits';
+        document.getElementById('places-display').textContent = places;
+        
+        const gainBrut = prix * places;
+        const gainNet = Math.max(0, gainBrut - 2);
+        
+        document.getElementById('gain-total').textContent = gainNet + ' crédits';
+    }
+    
+    prixInput.addEventListener('input', updateCalculation);
+    placesInput.addEventListener('input', updateCalculation);
+    
+    // Calculer au chargement
+    updateCalculation();
+    
+    // Auto-calculate arrival time (1-6 hours after departure)
+    const departInput = document.getElementById('trajet_dateDepart');
+    const arriveeInput = document.getElementById('trajet_dateArrivee');
+    
+    departInput.addEventListener('change', function() {
+        if (this.value && !arriveeInput.value) {
+            const depart = new Date(this.value);
+            const arrivee = new Date(depart.getTime() + (3 * 60 * 60 * 1000)); // +3h par défaut
+            arriveeInput.value = arrivee.toISOString().slice(0, 16);
+        }
+    });
+});
+</script>
+{% endblock %}

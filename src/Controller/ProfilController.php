@@ -111,6 +111,32 @@ class ProfilController extends AbstractController
         return $this->redirectToRoute('app_profil_vehicules');
     }
 
+    #[Route('/vehicules/{id}/modifier', name: 'app_profil_vehicule_modifier')]
+    public function modifierVehicule(Vehicle $vehicule, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        
+        if ($vehicule->getUtilisateur() !== $user) {
+            $this->addFlash('error', 'Vous ne pouvez modifier que vos propres véhicules.');
+            return $this->redirectToRoute('app_profil_vehicules');
+        }
+
+        $form = $this->createForm(VehicleType::class, $vehicule);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Véhicule modifié avec succès !');
+            return $this->redirectToRoute('app_profil_vehicules');
+        }
+
+        return $this->render('profil/modifier_vehicule.html.twig', [
+            'form' => $form,
+            'vehicule' => $vehicule,
+        ]);
+    }
+
     #[Route('/preferences', name: 'app_profil_preferences')]
     public function preferences(Request $request, EntityManagerInterface $entityManager): Response
     {
