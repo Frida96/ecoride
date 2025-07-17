@@ -1,0 +1,166 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes véhicules - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Header -->
+        <div class="col-12 mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="fw-bold">
+                        <i class="fas fa-car text-success me-3"></i>
+                        Mes véhicules
+                    </h1>
+                    <p class="text-muted">Gérez vos véhicules pour proposer des covoiturages</p>
+                </div>
+                <a href="{{ path('app_profil') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Retour au profil
+                </a>
+            </div>
+        </div>
+
+        <!-- Bouton ajouter véhicule -->
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-body p-4 text-center">
+                    <i class="fas fa-plus-circle text-success" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <h4 class="fw-bold mb-3">Ajouter un véhicule</h4>
+                    <p class="text-muted mb-4">
+                        Ajoutez vos véhicules pour commencer à proposer des trajets écologiques
+                    </p>
+                    <a href="{{ path('app_profil_vehicule_ajouter') }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-plus me-2"></i>Ajouter un véhicule
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des véhicules -->
+        {% if user.vehicles|length > 0 %}
+            <div class="col-12">
+                <h3 class="fw-bold mb-4">
+                    <i class="fas fa-list me-2"></i>
+                    Mes véhicules ({{ user.vehicles|length }})
+                </h3>
+                
+                <div class="row g-4">
+                    {% for vehicle in user.vehicles %}
+                        <div class="col-lg-6 col-xl-4">
+                            <div class="card vehicle-card h-100">
+                                <div class="card-body p-4">
+                                    <!-- Badge écologique -->
+                                    {% if vehicle.energie == 'electrique' %}
+                                        <div class="position-absolute top-0 end-0 m-3">
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-leaf me-1"></i>Écologique
+                                            </span>
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- Info véhicule -->
+                                    <div class="vehicle-header mb-3">
+                                        <div class="vehicle-icon mb-3">
+                                            {% if vehicle.energie == 'electrique' %}
+                                                <i class="fas fa-car text-success"></i>
+                                            {% else %}
+                                                <i class="fas fa-car text-primary"></i>
+                                            {% endif %}
+                                        </div>
+                                        <h5 class="fw-bold mb-1">{{ vehicle.marque }} {{ vehicle.modele }}</h5>
+                                        <p class="text-muted mb-0">{{ vehicle.couleur }} - {{ vehicle.energie|title }}</p>
+                                    </div>
+
+                                    <!-- Détails -->
+                                    <div class="vehicle-details">
+                                        <div class="detail-row">
+                                            <i class="fas fa-id-card text-muted me-2"></i>
+                                            <span>{{ vehicle.immatriculation }}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <i class="fas fa-calendar text-muted me-2"></i>
+                                            <span>Immatriculé le {{ vehicle.datePremierImmatriculation|date('d/m/Y') }}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <i class="fas fa-gas-pump text-muted me-2"></i>
+                                            <span>{{ vehicle.energie|title }}</span>
+                                            {% if vehicle.energie == 'electrique' %}
+                                                <span class="text-success ms-1">⚡</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="vehicle-actions mt-4">
+                                        <button class="btn btn-outline-primary btn-sm me-2">
+                                            <i class="fas fa-edit me-1"></i>Modifier
+                                        </button>
+                                        <form method="POST" action="{{ path('app_profil_vehicule_supprimer', {id: vehicle.id}) }}" 
+                                              class="d-inline" 
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                <i class="fas fa-trash me-1"></i>Supprimer
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <!-- Aucun véhicule -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body p-5 text-center">
+                        <i class="fas fa-car text-muted" style="font-size: 5rem; margin-bottom: 30px; opacity: 0.3;"></i>
+                        <h3 class="fw-bold mb-3">Aucun véhicule enregistré</h3>
+                        <p class="lead text-muted mb-4">
+                            Pour proposer des covoiturages, vous devez d'abord ajouter au moins un véhicule.
+                        </p>
+                        <a href="{{ path('app_profil_vehicule_ajouter') }}" class="btn btn-success btn-lg">
+                            <i class="fas fa-plus me-2"></i>Ajouter mon premier véhicule
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.vehicle-card {
+    position: relative;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--eco-green);
+    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);
+}
+
+.vehicle-icon {
+    text-align: center;
+}
+
+.vehicle-icon i {
+    font-size: 3rem;
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.vehicle-actions {
+    border-top: 1px solid #e5e5e5;
+    padding-top: 15px;
+}
+</style>
+{% endblock %}

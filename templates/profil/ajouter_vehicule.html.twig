@@ -1,0 +1,206 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un véhicule - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="fw-bold">
+                            <i class="fas fa-plus-circle text-success me-3"></i>
+                            Ajouter un véhicule
+                        </h1>
+                        <p class="text-muted">Ajoutez votre véhicule pour proposer des covoiturages</p>
+                    </div>
+                    <a href="{{ path('app_profil_vehicules') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour
+                    </a>
+                </div>
+            </div>
+
+            <!-- Formulaire -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <!-- Info écologique -->
+                    <div class="alert alert-success mb-4">
+                        <i class="fas fa-leaf me-2"></i>
+                        <strong>Astuce écologique :</strong> Les véhicules électriques sont automatiquement 
+                        marqués comme "écologiques" et attirent plus de passagers soucieux de l'environnement !
+                    </div>
+
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                        
+                        <div class="row g-4">
+                            <!-- Plaque d'immatriculation -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-id-card text-primary me-2"></i>{{ form_label(form.immatriculation) }}
+                                </label>
+                                {{ form_widget(form.immatriculation) }}
+                                {{ form_errors(form.immatriculation) }}
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Format : AB-123-CD ou AB123CD
+                                </div>
+                            </div>
+
+                            <!-- Date immatriculation -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar text-primary me-2"></i>{{ form_label(form.datePremierImmatriculation) }}
+                                </label>
+                                {{ form_widget(form.datePremierImmatriculation) }}
+                                {{ form_errors(form.datePremierImmatriculation) }}
+                            </div>
+
+                            <!-- Marque -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-industry text-primary me-2"></i>{{ form_label(form.marque) }}
+                                </label>
+                                {{ form_widget(form.marque) }}
+                                {{ form_errors(form.marque) }}
+                            </div>
+
+                            <!-- Modèle -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-car text-primary me-2"></i>{{ form_label(form.modele) }}
+                                </label>
+                                {{ form_widget(form.modele) }}
+                                {{ form_errors(form.modele) }}
+                            </div>
+
+                            <!-- Couleur -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-palette text-primary me-2"></i>{{ form_label(form.couleur) }}
+                                </label>
+                                {{ form_widget(form.couleur) }}
+                                {{ form_errors(form.couleur) }}
+                            </div>
+
+                            <!-- Énergie -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-gas-pump text-primary me-2"></i>{{ form_label(form.energie) }}
+                                </label>
+                                {{ form_widget(form.energie) }}
+                                {{ form_errors(form.energie) }}
+                                <div class="form-text">
+                                    <i class="fas fa-leaf text-success me-1"></i>
+                                    Les véhicules électriques sont marqués comme écologiques
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aperçu en temps réel -->
+                        <div class="mt-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-eye text-info me-2"></i>
+                                Aperçu de votre véhicule
+                            </h5>
+                            <div class="card bg-light">
+                                <div class="card-body p-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <div class="vehicle-preview-icon">
+                                                <i class="fas fa-car text-primary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="preview-content">
+                                                <h6 class="fw-bold mb-1">
+                                                    <span id="preview-marque">Marque</span> 
+                                                    <span id="preview-modele">Modèle</span>
+                                                </h6>
+                                                <p class="text-muted mb-0">
+                                                    <span id="preview-couleur">Couleur</span> - 
+                                                    <span id="preview-energie">Énergie</span>
+                                                    <span id="preview-eco-badge" class="badge bg-success ms-2" style="display: none;">
+                                                        <i class="fas fa-leaf me-1"></i>Écologique
+                                                    </span>
+                                                </p>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-id-card me-1"></i>
+                                                    <span id="preview-immat">Immatriculation</span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Boutons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('app_profil_vehicules') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Annuler
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Enregistrer le véhicule
+                            </button>
+                        </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.vehicle-preview-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(34, 197, 94, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.form-control:focus {
+    border-color: var(--eco-green);
+    box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+}
+</style>
+
+<script>
+// Aperçu en temps réel
+document.addEventListener('DOMContentLoaded', function() {
+    const marqueSelect = document.getElementById('vehicle_marque');
+    const modeleInput = document.getElementById('vehicle_modele');
+    const couleurSelect = document.getElementById('vehicle_couleur');
+    const energieSelect = document.getElementById('vehicle_energie');
+    const immatInput = document.getElementById('vehicle_immatriculation');
+
+    function updatePreview() {
+        document.getElementById('preview-marque').textContent = marqueSelect.value || 'Marque';
+        document.getElementById('preview-modele').textContent = modeleInput.value || 'Modèle';
+        document.getElementById('preview-couleur').textContent = couleurSelect.value || 'Couleur';
+        document.getElementById('preview-energie').textContent = energieSelect.value || 'Énergie';
+        document.getElementById('preview-immat').textContent = immatInput.value || 'Immatriculation';
+
+        // Badge écologique
+        const ecoBadge = document.getElementById('preview-eco-badge');
+        if (energieSelect.value === 'electrique') {
+            ecoBadge.style.display = 'inline-block';
+        } else {
+            ecoBadge.style.display = 'none';
+        }
+    }
+
+    // Écouter les changements
+    [marqueSelect, modeleInput, couleurSelect, energieSelect, immatInput].forEach(element => {
+        element.addEventListener('input', updatePreview);
+        element.addEventListener('change', updatePreview);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,226 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes préférences - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="fw-bold">
+                            <i class="fas fa-heart text-primary me-3"></i>
+                            Mes préférences de voyage
+                        </h1>
+                        <p class="text-muted">Configurez vos préférences pour des trajets plus agréables</p>
+                    </div>
+                    <a href="{{ path('app_profil') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour au profil
+                    </a>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="alert alert-info mb-4">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>À quoi servent ces préférences ?</strong><br>
+                Ces informations seront visibles par les passagers intéressés par vos trajets. 
+                Elles les aideront à choisir le covoiturage qui leur convient le mieux.
+            </div>
+
+            <!-- Formulaire -->
+            <div class="card">
+                <div class="card-body p-4">
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                        
+                        <div class="row g-4">
+                            <!-- Fumeur -->
+                            <div class="col-md-6">
+                                <div class="preference-card">
+                                    <div class="preference-icon">
+                                        <i class="fas fa-smoking text-warning"></i>
+                                    </div>
+                                    <div class="preference-content">
+                                        <label class="form-label fw-bold">{{ form_label(form.fumeur) }}</label>
+                                        {{ form_widget(form.fumeur) }}
+                                        {{ form_errors(form.fumeur) }}
+                                        <small class="text-muted">Acceptez-vous les passagers fumeurs ?</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Animaux -->
+                            <div class="col-md-6">
+                                <div class="preference-card">
+                                    <div class="preference-icon">
+                                        <i class="fas fa-paw text-success"></i>
+                                    </div>
+                                    <div class="preference-content">
+                                        <label class="form-label fw-bold">{{ form_label(form.animaux) }}</label>
+                                        {{ form_widget(form.animaux) }}
+                                        {{ form_errors(form.animaux) }}
+                                        <small class="text-muted">Les animaux sont-ils les bienvenus ?</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Musique -->
+                            <div class="col-md-6">
+                                <div class="preference-card">
+                                    <div class="preference-icon">
+                                        <i class="fas fa-music text-primary"></i>
+                                    </div>
+                                    <div class="preference-content">
+                                        <label class="form-label fw-bold">{{ form_label(form.musique) }}</label>
+                                        {{ form_widget(form.musique) }}
+                                        {{ form_errors(form.musique) }}
+                                        <small class="text-muted">Aimez-vous écouter de la musique ?</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Discussion -->
+                            <div class="col-md-6">
+                                <div class="preference-card">
+                                    <div class="preference-icon">
+                                        <i class="fas fa-comments text-info"></i>
+                                    </div>
+                                    <div class="preference-content">
+                                        <label class="form-label fw-bold">{{ form_label(form.discussion) }}</label>
+                                        {{ form_widget(form.discussion) }}
+                                        {{ form_errors(form.discussion) }}
+                                        <small class="text-muted">Appréciez-vous les conversations ?</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Arrêts pause -->
+                            <div class="col-md-6">
+                                <div class="preference-card">
+                                    <div class="preference-icon">
+                                        <i class="fas fa-coffee text-warning"></i>
+                                    </div>
+                                    <div class="preference-content">
+                                        <label class="form-label fw-bold">{{ form_label(form.arretsPipi) }}</label>
+                                        {{ form_widget(form.arretsPipi) }}
+                                        {{ form_errors(form.arretsPipi) }}
+                                        <small class="text-muted">Acceptez-vous les pauses durant le trajet ?</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Préférences libres -->
+                        <div class="mt-4">
+                            <div class="card bg-light">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold mb-3">
+                                        <i class="fas fa-edit text-secondary me-2"></i>
+                                        Informations complémentaires
+                                    </h5>
+                                    <label class="form-label">{{ form_label(form.preferencesLibres) }}</label>
+                                    {{ form_widget(form.preferencesLibres) }}
+                                    {{ form_errors(form.preferencesLibres) }}
+                                    <div class="form-text">
+                                        <i class="fas fa-lightbulb me-1"></i>
+                                        Exemples : "Je préfère les trajets matinaux", "J'accepte les enfants", 
+                                        "Non-fumeur strict", "Trajet sans escale"...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aperçu -->
+                        {% if user.preferences %}
+                            <div class="mt-4">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-eye text-info me-2"></i>
+                                    Aperçu actuel
+                                </h5>
+                                <div class="card bg-light">
+                                    <div class="card-body p-3">
+                                        <h6 class="fw-bold mb-2">Ce que voient les passagers :</h6>
+                                        <div class="preferences-display">
+                                            {% set preferences = user.preferences|split(', ') %}
+                                            {% for preference in preferences %}
+                                                {% set parts = preference|split(': ') %}
+                                                {% if parts|length == 2 %}
+                                                    <div class="d-flex justify-content-between border-bottom py-1">
+                                                        <span class="text-muted">{{ parts[0] }}:</span>
+                                                        <strong class="{{ parts[1] == 'Oui' ? 'text-success' : 'text-danger' }}">
+                                                            {{ parts[1] }}
+                                                        </strong>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Boutons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('app_profil') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Enregistrer mes préférences
+                            </button>
+                        </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.preference-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.preference-card:hover {
+    border-color: var(--eco-green);
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.preference-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(34, 197, 94, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.preference-content {
+    flex: 1;
+}
+
+.preferences-display {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.form-control:focus {
+    border-color: var(--eco-green);
+    box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+}
+</style>
+{% endblock %}
