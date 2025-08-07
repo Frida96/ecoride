@@ -1,0 +1,358 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Historique - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Header -->
+        <div class="col-12 mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="fw-bold">
+                        <i class="fas fa-history text-primary me-3"></i>
+                        Mon Historique
+                    </h1>
+                    <p class="text-muted">Tous vos trajets en tant que chauffeur et passager</p>
+                </div>
+                <a href="{{ path('app_profil') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Retour au profil
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistiques globales -->
+        <div class="col-12 mb-4">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success">
+                            <i class="fas fa-car text-white"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="fw-bold mb-0">{{ trajetsConduits|length }}</h3>
+                            <p class="text-muted mb-0">Trajets conduits</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="fw-bold mb-0">{{ participations|length }}</h3>
+                            <p class="text-muted mb-0">Participations</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-warning">
+                            <i class="fas fa-coins text-white"></i>
+                        </div>
+                        <div class="stat-content">
+                            {% set totalGagne = 0 %}
+                            {% for trajet in trajetsConduits %}
+                                {% set totalGagne = totalGagne + (trajet.participations|length * trajet.prix) %}
+                            {% endfor %}
+                            <h3 class="fw-bold mb-0">{{ totalGagne }}</h3>
+                            <p class="text-muted mb-0">Crédits gagnés</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-info">
+                            <i class="fas fa-euro-sign text-white"></i>
+                        </div>
+                        <div class="stat-content">
+                            {% set totalDepense = 0 %}
+                            {% for participation in participations %}
+                                {% set totalDepense = totalDepense + participation.trajet.prix %}
+                            {% endfor %}
+                            <h3 class="fw-bold mb-0">{{ totalDepense }}</h3>
+                            <p class="text-muted mb-0">Crédits dépensés</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglets -->
+        <div class="col-12">
+            <ul class="nav nav-tabs mb-4" id="historiqueTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="chauffeur-tab" data-bs-toggle="tab" data-bs-target="#chauffeur" type="button">
+                        <i class="fas fa-car me-2"></i>En tant que chauffeur ({{ trajetsConduits|length }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="passager-tab" data-bs-toggle="tab" data-bs-target="#passager" type="button">
+                        <i class="fas fa-user me-2"></i>En tant que passager ({{ participations|length }})
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="historiqueTabContent">
+                <!-- Trajets conduits -->
+                <div class="tab-pane fade show active" id="chauffeur" role="tabpanel">
+                    {% if trajetsConduits|length > 0 %}
+                        <div class="row g-4">
+                            {% for trajet in trajetsConduits %}
+                                <div class="col-lg-6">
+                                    <div class="card trajet-card">
+                                        <div class="card-body p-4">
+                                            <!-- Header avec statut -->
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <div>
+                                                    <h5 class="fw-bold mb-1">{{ trajet.lieuDepart }} → {{ trajet.lieuArrivee }}</h5>
+                                                    <p class="text-muted mb-0">{{ trajet.dateDepart|date('d/m/Y à H:i') }}</p>
+                                                </div>
+                                                <div class="text-end">
+                                                    <span class="badge bg-{{ trajet.statut == 'en_attente' ? 'warning' : (trajet.statut == 'termine' ? 'success' : (trajet.statut == 'annule' ? 'danger' : 'primary')) }}">
+                                                        {{ trajet.statut|title }}
+                                                    </span>
+                                                    {% if trajet.isEcologique %}
+                                                        <span class="badge bg-success mt-1 d-block">
+                                                            <i class="fas fa-leaf me-1"></i>Écologique
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <!-- Détails -->
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-4 text-center">
+                                                    <div class="detail-box">
+                                                        <i class="fas fa-users text-primary"></i>
+                                                        <small class="d-block">{{ trajet.participations|length }}/{{ trajet.nbPlaces }}</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4 text-center">
+                                                    <div class="detail-box">
+                                                        <i class="fas fa-euro-sign text-success"></i>
+                                                        <small class="d-block">{{ trajet.prix }} crédits</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4 text-center">
+                                                    <div class="detail-box">
+                                                        <i class="fas fa-coins text-warning"></i>
+                                                        <small class="d-block">{{ trajet.participations|length * trajet.prix }} gagnés</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Participants -->
+                                            {% if trajet.participations|length > 0 %}
+                                                <div class="participants mb-3">
+                                                    <h6 class="fw-bold mb-2">Passagers :</h6>
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        {% for participation in trajet.participations %}
+                                                            <span class="participant-badge">
+                                                                <i class="fas fa-user me-1"></i>{{ participation.passager.pseudo }}
+                                                            </span>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
+                                            <!-- Actions -->
+                                            <div class="actions">
+                                                <a href="{{ path('app_covoiturage_detail', {id: trajet.id}) }}" class="btn btn-outline-primary btn-sm me-2">
+                                                    <i class="fas fa-eye me-1"></i>Détails
+                                                </a>
+                                                {% if trajet.statut == 'en_attente' and trajet.dateDepart > 'now'|date_modify('+1 hour') %}
+                                                    <form method="POST" action="{{ path('app_annuler_trajet', {id: trajet.id}) }}" class="d-inline">
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                                                onclick="return confirm('Êtes-vous sûr de vouloir annuler ce trajet ?')">
+                                                            <i class="fas fa-times me-1"></i>Annuler
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-car-side" style="font-size: 4rem; color: #ddd; margin-bottom: 20px;"></i>
+                            <h4>Aucun trajet conduit</h4>
+                            <p class="text-muted">Vous n'avez pas encore proposé de voyage.</p>
+                            <a href="{{ path('app_voyage_proposer') }}" class="btn btn-success">
+                                <i class="fas fa-plus me-2"></i>Proposer un voyage
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Participations -->
+                <div class="tab-pane fade" id="passager" role="tabpanel">
+                    {% if participations|length > 0 %}
+                        <div class="row g-4">
+                            {% for participation in participations %}
+                                {% set trajet = participation.trajet %}
+                                <div class="col-lg-6">
+                                    <div class="card participation-card">
+                                        <div class="card-body p-4">
+                                            <!-- Header avec statut -->
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <div>
+                                                    <h5 class="fw-bold mb-1">{{ trajet.lieuDepart }} → {{ trajet.lieuArrivee }}</h5>
+                                                    <p class="text-muted mb-0">{{ trajet.dateDepart|date('d/m/Y à H:i') }}</p>
+                                                </div>
+                                                <div class="text-end">
+                                                    <span class="badge bg-{{ trajet.statut == 'en_attente' ? 'warning' : (trajet.statut == 'termine' ? 'success' : (trajet.statut == 'annule' ? 'danger' : 'primary')) }}">
+                                                        {{ trajet.statut|title }}
+                                                    </span>
+                                                    {% if trajet.isEcologique %}
+                                                        <span class="badge bg-success mt-1 d-block">
+                                                            <i class="fas fa-leaf me-1"></i>Écologique
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <!-- Chauffeur -->
+                                            <div class="chauffeur-info mb-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="chauffeur-avatar me-2">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                    <div>
+                                                        <strong>{{ trajet.chauffeur.pseudo }}</strong>
+                                                        <small class="text-muted d-block">Chauffeur</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Détails -->
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-6 text-center">
+                                                    <div class="detail-box">
+                                                        <i class="fas fa-euro-sign text-danger"></i>
+                                                        <small class="d-block">{{ trajet.prix }} crédits</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 text-center">
+                                                    <div class="detail-box">
+                                                        <i class="fas fa-car text-info"></i>
+                                                        <small class="d-block">{{ trajet.vehicule.marque }} {{ trajet.vehicule.modele }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Actions -->
+                                            <div class="actions">
+                                                <a href="{{ path('app_covoiturage_detail', {id: trajet.id}) }}" class="btn btn-outline-primary btn-sm me-2">
+                                                    <i class="fas fa-eye me-1"></i>Détails
+                                                </a>
+                                                {% if trajet.statut == 'en_attente' and trajet.dateDepart > 'now'|date_modify('+1 hour') %}
+                                                    <form method="POST" action="{{ path('app_annuler_participation', {id: participation.id}) }}" class="d-inline">
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                                                onclick="return confirm('Êtes-vous sûr de vouloir annuler cette participation ?')">
+                                                            <i class="fas fa-times me-1"></i>Annuler
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-user-friends" style="font-size: 4rem; color: #ddd; margin-bottom: 20px;"></i>
+                            <h4>Aucune participation</h4>
+                            <p class="text-muted">Vous n'avez pas encore participé à un covoiturage.</p>
+                            <a href="{{ path('app_covoiturages') }}" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Rechercher un trajet
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-card {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+.trajet-card, .participation-card {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.trajet-card:hover, .participation-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--eco-green);
+    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);
+}
+
+.detail-box {
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+}
+
+.detail-box i {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.participant-badge {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--eco-green);
+    padding: 4px 8px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+}
+
+.chauffeur-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--eco-green), var(--eco-blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--eco-green);
+    border-color: var(--eco-green);
+    color: white;
+}
+
+.nav-tabs .nav-link {
+    color: var(--eco-green);
+}
+</style>
+{% endblock %}

@@ -161,4 +161,83 @@ class ProfilController extends AbstractController
             'user' => $user,
         ]);
     }
+    #[Route('/historique', name: 'app_profil_historique')]
+    public function historique(): Response
+    {
+        $user = $this->getUser();
+        
+        // Trajets conduits (en tant que chauffeur)
+        $trajetsConduits = $user->getTrajetsConduits();
+        
+        // Participations (en tant que passager)
+        $participations = $user->getParticipations();
+        
+        return $this->render('profil/historique.html.twig', [
+            'user' => $user,
+            'trajetsConduits' => $trajetsConduits,
+            'participations' => $participations,
+        ]);
+    }
+
+    #[Route('/annuler-participation/{id}', name: 'app_annuler_participation', methods: ['POST'])]
+    public function annulerParticipation(Participation $participation, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        
+        if ($participation->getPassager() !== $user) {
+            $this->addFlash('error', 'Vous ne pouvez annuler que vos propres participations.');
+            return $this->redirectToRoute('app_profil_historique');
+        }
+
+        $trajet = $participation->getTrajet();
+        
+        // Vérifier que le trajet n'a pas encore commencé
+        if ($trajet->getDateDepart() <= new \DateTime()) {
+            $this->addFlash('error', 'Impossible d\'annuler une participation pour un trajet déjà commencé.');
+            return $this->redirectToRoute('app_profil_historique');
+        }
+
+        // Rembourser les crédits
+        $user->setCredit($user->getCredit() + $trajet->getPrix());
+        
+        // Supprimer la participation
+        $entityManager->remove($participation);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Participation annulée avec succès. ' . $trajet->getPrix() . ' crédits ont été remboursés.');
+        
+        return $this->redirectToRoute('app_profil_historique');
+    }
+
+    #[Route('/annuler-trajet/{id}', name: 'app_annuler_trajet', methods: ['POST'])]
+    public function annulerTrajet(Trajet $trajet, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        
+        if ($trajet->getChauffeur() !== $user) {
+            $this->addFlash('error', 'Vous ne pouvez annuler que vos propres trajets.');
+            return $this->redirectToRoute('app_profil_historique');
+        }
+
+        // Vérifier que le trajet n'a pas encore commencé
+        if ($trajet->getDateDepart() <= new \DateTime()) {
+            $this->addFlash('error', 'Impossible d\'annuler un trajet déjà commencé.');
+            return $this->redirectToRoute('app_profil_historique');
+        }
+
+        // Rembourser tous les participants
+        foreach ($trajet->getParticipations() as $participation) {
+            $passager = $participation->getPassager();
+            $passager->setCredit($passager->getCredit() + $trajet->getPrix());
+        }
+
+        // Marquer le trajet comme annulé
+        $trajet->setStatut('annule');
+        
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Trajet annulé avec succès. Tous les participants ont été remboursés.');
+        
+        return $this->redirectToRoute('app_profil_historique');
+    }
 }
