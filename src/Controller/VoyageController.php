@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 #[Route('/voyage')]
 #[IsGranted('ROLE_USER')]
@@ -96,5 +98,99 @@ class VoyageController extends AbstractController
             'trajets' => $trajetsConduits,
             'user' => $user,
         ]);
+    }
+
+    #[Route('/{id}/demarrer', name: 'app_voyage_demarrer', methods: ['POST'])]
+    public function demarrer(Trajet $trajet, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+    {
+        $user = $this->getUser();
+        
+        if ($trajet->getChauffeur() !== $user) {
+            $this->addFlash('error', 'Vous ne pouvez démarrer que vos propres trajets.');
+            return $this->redirectToRoute('app_mes_voyages');
+        }
+
+        if ($trajet->getStatut() !== 'en_attente') {
+            $this->addFlash('error', 'Ce trajet ne peut pas être démarré.');
+            return $this->redirectToRoute('app_mes_voyages');
+        }
+
+        // Marquer le trajet comme en cours
+        $trajet->setStatut('en_cours');
+        $entityManager->flush();
+
+        // Envoyer un email aux participants
+        foreach ($trajet->getParticipations() as $participation) {
+            try {
+                $email = (new Email())
+                    ->from('noreply@ecoride.fr')
+                    ->to($participation->getPassager()->getEmail())
+                    ->subject('🚗 Votre covoiturage EcoRide a démarré !')
+                    ->html("
+                        <h2>Votre trajet a commencé !</h2>
+                        <p>Bonjour {$participation->getPassager()->getPseudo()},</p>
+                        <p>Votre covoiturage <strong>{$trajet->getLieuDepart()} → {$trajet->getLieuArrivee()}</strong> a officiellement commencé !</p>
+                        <p>Bon voyage ! 🌱</p>
+                        <p>L'équipe EcoRide</p>
+                    ");
+                
+                $mailer->send($email);
+            } catch (\Exception $e) {
+                // Log l'erreur mais ne pas bloquer le processus
+            }
+        }
+
+        $this->addFlash('success', 'Trajet démarré ! Les participants ont été notifiés par email.');
+        return $this->redirectToRoute('app_mes_voyages');
+    }
+
+    #[Route('/{id}/terminer', name: 'app_voyage_terminer', methods: ['POST'])]
+    public function terminer(Trajet $trajet, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+    {
+        $user = $this->getUser();
+        
+        if ($trajet->getChauffeur() !== $user) {
+            $this->addFlash('error', 'Vous ne pouvez terminer que vos propres trajets.');
+            return $this->redirectToRoute('app_mes_voyages');
+        }
+
+        if ($trajet->getStatut() !== 'en_cours') {
+            $this->addFlash('error', 'Ce trajet n\'est pas en cours.');
+            return $this->redirectToRoute('app_mes_voyages');
+        }
+
+        // Marquer le trajet comme terminé
+        $trajet->setStatut('termine');
+        $entityManager->flush();
+
+        // Envoyer un email aux participants pour validation
+        foreach ($trajet->getParticipations() as $participation) {
+            try {
+                $email = (new Email())
+                    ->from('noreply@ecoride.fr')
+                    ->to($participation->getPassager()->getEmail())
+                    ->subject('✅ Votre covoiturage EcoRide est terminé - Validation requise')
+                    ->html("
+                        <h2>Trajet terminé avec succès !</h2>
+                        <p>Bonjour {$participation->getPassager()->getPseudo()},</p>
+                        <p>Votre covoiturage <strong>{$trajet->getLieuDepart()} → {$trajet->getLieuArrivee()}</strong> est maintenant terminé.</p>
+                        <p>Merci de vous rendre sur votre espace EcoRide pour :</p>
+                        <ul>
+                            <li>✅ Valider que tout s'est bien passé</li>
+                            <li>⭐ Laisser un avis sur le chauffeur (optionnel)</li>
+                        </ul>
+                        <p>Une fois validé, les crédits seront transférés au chauffeur.</p>
+                        <p>Merci d'avoir choisi EcoRide ! 🌱</p>
+                        <p>L'équipe EcoRide</p>
+                    ");
+                
+                $mailer->send($email);
+            } catch (\Exception $e) {
+                // Log l'erreur mais ne pas bloquer le processus
+            }
+        }
+
+        $this->addFlash('success', 'Trajet terminé ! Les participants ont été notifiés pour validation.');
+        return $this->redirectToRoute('app_mes_voyages');
     }
 }

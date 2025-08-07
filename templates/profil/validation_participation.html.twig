@@ -1,0 +1,236 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Validation du trajet - EcoRide{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="fw-bold">
+                    <i class="fas fa-check-circle text-success me-3"></i>
+                    Validation de votre trajet
+                </h1>
+                <p class="lead text-muted">
+                    Comment s'est passé votre covoiturage avec {{ trajet.chauffeur.pseudo }} ?
+                </p>
+            </div>
+
+            <!-- Récapitulatif trajet -->
+            <div class="card mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">
+                        <i class="fas fa-route text-primary me-2"></i>
+                        Récapitulatif du trajet
+                    </h4>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="trajet-info">
+                                <strong>{{ trajet.lieuDepart }} → {{ trajet.lieuArrivee }}</strong>
+                                <p class="text-muted mb-0">{{ trajet.dateDepart|date('d/m/Y à H:i') }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="chauffeur-avatar mb-2">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <strong>{{ trajet.chauffeur.pseudo }}</strong>
+                                <p class="text-muted small mb-0">Chauffeur</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-success mb-0">{{ trajet.prix }}</h3>
+                                <small class="text-muted">crédits payés</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulaire de validation -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4">
+                        <i class="fas fa-clipboard-check text-success me-2"></i>
+                        Votre validation
+                    </h4>
+
+                    {{ form_start(form) }}
+                        <div class="validation-options mb-4">
+                            <h5 class="mb-3">Le trajet s'est-il bien passé ?</h5>
+                            
+                            <!-- Option : Tout va bien -->
+                            <div class="validation-card validation-ok active" data-validation="ok">
+                                <div class="d-flex align-items-center">
+                                    <div class="validation-icon me-3">
+                                        <i class="fas fa-thumbs-up text-success"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">✅ Tout s'est bien passé</h6>
+                                        <p class="text-muted mb-0">Le trajet s'est déroulé normalement</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Option : Problème -->
+                            <div class="validation-card validation-problem" data-validation="problem">
+                                <div class="d-flex align-items-center">
+                                    <div class="validation-icon me-3">
+                                        <i class="fas fa-exclamation-triangle text-warning"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">⚠️ Il y a eu un problème</h6>
+                                        <p class="text-muted mb-0">Signaler un incident pour résolution</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section avis (visible si "tout va bien") -->
+                        <div id="avis-section">
+                            <h5 class="mb-3">Laisser un avis (optionnel)</h5>
+                            
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">{{ form_label(form.note) }}</label>
+                                    {{ form_widget(form.note) }}
+                                    {{ form_errors(form.note) }}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">{{ form_label(form.commentaire) }}</label>
+                                {{ form_widget(form.commentaire) }}
+                                {{ form_errors(form.commentaire) }}
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Votre avis aidera les futurs passagers et sera vérifié avant publication
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section problème (masquée par défaut) -->
+                        <div id="probleme-section" style="display: none;">
+                            <h5 class="mb-3">Décrire le problème</h5>
+                            <div class="mb-4">
+                                <label for="probleme_commentaire" class="form-label">Que s'est-il passé ?</label>
+                                <textarea name="probleme_commentaire" id="probleme_commentaire" 
+                                          class="form-control" rows="4" 
+                                          placeholder="Décrivez le problème rencontré..."></textarea>
+                                <div class="form-text">
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    Notre équipe examinera votre signalement et vous contactera si nécessaire
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Input caché pour le type de validation -->
+                        <input type="hidden" name="validation" id="validation_type" value="ok">
+
+                        <!-- Boutons -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('app_profil_historique') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Retour
+                            </a>
+                            <button type="submit" class="btn btn-success" id="submit-btn">
+                                <i class="fas fa-check me-2"></i>Valider mon expérience
+                            </button>
+                        </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.validation-card {
+    padding: 20px;
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.validation-card:hover {
+    border-color: var(--eco-green);
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.validation-card.active {
+    border-color: var(--eco-green);
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.validation-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(34, 197, 94, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.chauffeur-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--eco-green), var(--eco-blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin: 0 auto;
+}
+
+.trajet-info {
+    padding: 15px;
+    background: rgba(34, 197, 94, 0.05);
+    border-radius: 8px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const validationCards = document.querySelectorAll('.validation-card');
+    const avisSection = document.getElementById('avis-section');
+    const problemeSection = document.getElementById('probleme-section');
+    const validationType = document.getElementById('validation_type');
+    const submitBtn = document.getElementById('submit-btn');
+
+    validationCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Retirer active de tous
+            validationCards.forEach(c => c.classList.remove('active'));
+            
+            // Ajouter active au cliqué
+            this.classList.add('active');
+            
+            const validation = this.dataset.validation;
+            validationType.value = validation;
+            
+            if (validation === 'ok') {
+                avisSection.style.display = 'block';
+                problemeSection.style.display = 'none';
+                submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Valider mon expérience';
+                submitBtn.className = 'btn btn-success';
+            } else {
+                avisSection.style.display = 'none';
+                problemeSection.style.display = 'block';
+                submitBtn.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Signaler le problème';
+                submitBtn.className = 'btn btn-warning';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

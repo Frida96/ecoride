@@ -30,7 +30,7 @@ class CreateTestDataCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->title('🌱 Création des données de test EcoRide');
+        $io->title('Création des données de test EcoRide');
 
         // Créer des utilisateurs de test
         $users = $this->createTestUsers($io);
@@ -46,7 +46,7 @@ class CreateTestDataCommand extends Command
 
         $this->entityManager->flush();
 
-        $io->success('✅ Données de test créées avec succès !');
+        $io->success('Données de test créées avec succès !');
         $io->table(['Type', 'Nombre créé'], [
             ['Utilisateurs', count($users)],
             ['Véhicules', count($vehicles)],
@@ -59,7 +59,7 @@ class CreateTestDataCommand extends Command
 
     private function createTestUsers(SymfonyStyle $io): array
     {
-        $io->section('👥 Création des utilisateurs...');
+        $io->section('Création des utilisateurs...');
         
         $usersData = [
             ['pseudo' => 'EcoMartin', 'email' => 'martin@ecoride.fr', 'role' => 'chauffeur'],
@@ -91,7 +91,7 @@ class CreateTestDataCommand extends Command
 
     private function createTestVehicles(SymfonyStyle $io, array $users): array
     {
-        $io->section('🚗 Création des véhicules...');
+        $io->section('Création des véhicules...');
         
         $vehiclesData = [
             ['immat' => 'AB-123-CD', 'marque' => 'Tesla', 'modele' => 'Model 3', 'couleur' => 'Blanc', 'energie' => 'electrique'],
@@ -121,7 +121,7 @@ class CreateTestDataCommand extends Command
 
     private function createTestTrajets(SymfonyStyle $io, array $users, array $vehicles): array
     {
-        $io->section('🛣️ Création des trajets...');
+        $io->section(' Création des trajets...');
         
         $trajetsData = [
             ['depart' => 'Paris', 'arrivee' => 'Lyon', 'prix' => 25, 'places' => 3, 'jours' => 1],

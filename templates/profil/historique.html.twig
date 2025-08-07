@@ -249,7 +249,11 @@
                                                 <a href="{{ path('app_covoiturage_detail', {id: trajet.id}) }}" class="btn btn-outline-primary btn-sm me-2">
                                                     <i class="fas fa-eye me-1"></i>Détails
                                                 </a>
-                                                {% if trajet.statut == 'en_attente' and trajet.dateDepart > 'now'|date_modify('+1 hour') %}
+                                                {% if trajet.statut == 'termine' and not participation.doubleValidation %}
+                                                    <a href="{{ path('app_validation_participation', {id: participation.id}) }}" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-check me-1"></i>Valider
+                                                    </a>
+                                                {% elseif trajet.statut == 'en_attente' and trajet.dateDepart > 'now'|date_modify('+1 hour') %}
                                                     <form method="POST" action="{{ path('app_annuler_participation', {id: participation.id}) }}" class="d-inline">
                                                         <button type="submit" class="btn btn-outline-danger btn-sm" 
                                                                 onclick="return confirm('Êtes-vous sûr de vouloir annuler cette participation ?')">
