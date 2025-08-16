@@ -87,7 +87,7 @@ Le projet utilise les entités suivantes :
 
 ## 🤝 Contribution
 
-Ce projet est développé dans le cadre d'une formation. Les contributions sont les bienvenues !
+Ce projet est développé dans le cadre d'une formation.
 
 ## 📝 Licence
 
@@ -95,7 +95,7 @@ Projet éducatif - Tous droits réservés
 
 ## 👨‍💻 Développeur
 
-Développé avec ❤️ dans le cadre du TP DWWM
+Développé dans le cadre du TP DWWM
 
 ---
 
