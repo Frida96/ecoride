@@ -131,4 +131,96 @@ class TrajetRepository extends ServiceEntityRepository
 
         return $result ? round((float)$result, 1) : 0.0;
     }
+
+    /**
+     * Récupère le total des crédits gagnés par la plateforme
+     * (2 crédits par trajet terminé)
+     */
+    public function getTotalCreditsGagnes(): int
+    {
+        return $this->createQueryBuilder('t')
+            ->select('COUNT(t.id) * 2')
+            ->where('t.statut = :statut')
+            ->setParameter('statut', 'termine')
+            ->getQuery()
+            ->getSingleScalarResult() ?? 0;
+    }
+
+    /**
+     * Récupère le nombre de covoiturages créés par jour sur les X derniers jours
+     */
+    public function getCovoituragesParJour(int $nombreJours = 30): array
+    {
+        $dateDebut = new \DateTime("-{$nombreJours} days");
+        
+        $result = $this->createQueryBuilder('t')
+            ->select('DATE(t.dateCreation) as date, COUNT(t.id) as count')
+            ->where('t.dateCreation >= :dateDebut')
+            ->setParameter('dateDebut', $dateDebut)
+            ->groupBy('DATE(t.dateCreation)')
+            ->orderBy('date', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        // Remplir les jours manquants avec 0
+        $donnees = [];
+        for ($i = $nombreJours - 1; $i >= 0; $i--) {
+            $date = (new \DateTime("-{$i} days"))->format('Y-m-d');
+            $count = 0;
+            
+            foreach ($result as $row) {
+                if ($row['date'] === $date) {
+                    $count = $row['count'];
+                    break;
+                }
+            }
+            
+            $donnees[] = [
+                'date' => (new \DateTime($date))->format('d/m'),
+                'count' => (int)$count
+            ];
+        }
+
+        return $donnees;
+    }
+
+    /**
+     * Récupère les crédits gagnés par la plateforme par jour sur les X derniers jours
+     */
+    public function getCreditsGagnesParJour(int $nombreJours = 30): array
+    {
+        $dateDebut = new \DateTime("-{$nombreJours} days");
+        
+        $result = $this->createQueryBuilder('t')
+            ->select('DATE(t.dateCreation) as date, COUNT(t.id) * 2 as total')
+            ->where('t.dateCreation >= :dateDebut')
+            ->andWhere('t.statut = :statut')
+            ->setParameter('dateDebut', $dateDebut)
+            ->setParameter('statut', 'termine')
+            ->groupBy('DATE(t.dateCreation)')
+            ->orderBy('date', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        // Remplir les jours manquants avec 0
+        $donnees = [];
+        for ($i = $nombreJours - 1; $i >= 0; $i--) {
+            $date = (new \DateTime("-{$i} days"))->format('Y-m-d');
+            $total = 0;
+            
+            foreach ($result as $row) {
+                if ($row['date'] === $date) {
+                    $total = $row['total'];
+                    break;
+                }
+            }
+            
+            $donnees[] = [
+                'date' => (new \DateTime($date))->format('d/m'),
+                'total' => (int)$total
+            ];
+        }
+
+        return $donnees;
+    }
 }

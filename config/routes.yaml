@@ -3,3 +3,15 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+# Routes pour l'espace employé
+employe_routes:
+    resource: ../src/Controller/EmployeController.php
+    type: attribute
+    prefix: /employe
+
+# Routes pour l'espace administrateur
+admin_routes:
+    resource: ../src/Controller/AdminController.php
+    type: attribute
+    prefix: /admin

@@ -1,0 +1,245 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail du problème - Espace Employé{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_employe_dashboard') }}">Espace Employé</a></li>
+                    <li class="breadcrumb-item active">Covoiturage #{{ participation.trajet.id }}</li>
+                </ol>
+            </nav>
+            <h1>
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                Problème de covoiturage
+            </h1>
+            <p class="text-muted">Covoiturage #{{ participation.trajet.id }} - Signalé le {{ participation.dateSignalement|date('d/m/Y à H:i') }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Informations principales -->
+        <div class="col-md-8">
+            <!-- Détails du trajet -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-route me-2"></i>Détails du trajet</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-map-marker-alt me-2 text-success"></i>Départ</h6>
+                            <p class="mb-0">{{ participation.trajet.adresseDepart }}</p>
+                            <small class="text-muted">{{ participation.trajet.dateDepart|date('d/m/Y à H:i') }}</small>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-flag-checkered me-2 text-danger"></i>Arrivée</h6>
+                            <p class="mb-0">{{ participation.trajet.adresseArrivee }}</p>
+                            <small class="text-muted">{{ participation.trajet.dateArrivee|date('d/m/Y à H:i') }}</small>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <h6>Prix</h6>
+                            <span class="badge bg-warning fs-6">{{ participation.trajet.prix }} crédits</span>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Places disponibles</h6>
+                            <span class="badge bg-info fs-6">{{ participation.trajet.placesDisponibles }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Type de trajet</h6>
+                            {% if participation.trajet.vehicule and participation.trajet.vehicule.energie == 'electrique' %}
+                                <span class="badge bg-success fs-6">
+                                    <i class="fas fa-leaf me-1"></i>Écologique
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary fs-6">Standard</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if participation.trajet.vehicule %}
+                        <div class="alert alert-light">
+                            <h6><i class="fas fa-car me-2"></i>Véhicule utilisé</h6>
+                            <p class="mb-1">
+                                <strong>{{ participation.trajet.vehicule.marque }} {{ participation.trajet.vehicule.modele }}</strong>
+                                - {{ participation.trajet.vehicule.couleur }}
+                            </p>
+                            <small class="text-muted">
+                                Immatriculation: {{ participation.trajet.vehicule.immatriculation }} | 
+                                Énergie: {{ participation.trajet.vehicule.energie|title }}
+                            </small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Détails du problème -->
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-circle me-2"></i>Problème signalé</h5>
+                </div>
+                <div class="card-body">
+                    {% if participation.commentaireProbleme %}
+                        <h6>Commentaire du passager :</h6>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-quote-left me-2"></i>
+                            {{ participation.commentaireProbleme }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Aucun commentaire détaillé n'a été fourni par le passager.
+                        </div>
+                    {% endif %}
+
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            Problème signalé le {{ participation.dateSignalement|date('d/m/Y à H:i') }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions disponibles -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Actions disponibles</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ path('app_employe_dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Retour au tableau de bord
+                        </a>
+                        <form method="post" action="{{ path('app_employe_resoudre_probleme', {'id': participation.id}) }}" class="d-inline">
+                            <button type="submit" class="btn btn-eco" 
+                                    onclick="return confirm('Êtes-vous sûr que ce problème est résolu ? Le chauffeur récupérera ses crédits.')">
+                                <i class="fas fa-check me-1"></i>Marquer comme résolu
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note :</strong> En marquant ce problème comme résolu, les crédits du chauffeur 
+                        ({{ participation.trajet.prix }} crédits) seront automatiquement ajoutés à son solde.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar avec informations des utilisateurs -->
+        <div class="col-md-4">
+            <!-- Informations du chauffeur -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Chauffeur</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-user-circle text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="mt-2">{{ participation.trajet.chauffeur.pseudo }}</h5>
+                    </div>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-envelope me-2"></i>{{ participation.trajet.chauffeur.email }}</li>
+                        <li><i class="fas fa-coins me-2"></i>{{ participation.trajet.chauffeur.credit }} crédits</li>
+                        <li><i class="fas fa-user-check me-2"></i>{{ participation.trajet.chauffeur.verifie ? 'Vérifié' : 'Non vérifié' }}</li>
+                    </ul>
+
+                    {% if participation.trajet.chauffeur.preferences %}
+                        <div class="mt-3">
+                            <h6>Préférences :</h6>
+                            <small class="text-muted">{{ participation.trajet.chauffeur.preferences }}</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Informations du passager -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-user me-2"></i>Passager</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-user-circle text-info" style="font-size: 3rem;"></i>
+                        <h5 class="mt-2">{{ participation.utilisateur.pseudo }}</h5>
+                    </div>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-envelope me-2"></i>{{ participation.utilisateur.email }}</li>
+                        <li><i class="fas fa-coins me-2"></i>{{ participation.utilisateur.credit }} crédits</li>
+                        <li><i class="fas fa-user-check me-2"></i>{{ participation.utilisateur.verifie ? 'Vérifié' : 'Non vérifié' }}</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Historique rapide -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-history me-2"></i>Résumé</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <i class="fas fa-plus text-success"></i>
+                            <span>Trajet créé le {{ participation.trajet.dateCreation|date('d/m/Y') }}</span>
+                        </div>
+                        <div class="timeline-item">
+                            <i class="fas fa-user-plus text-info"></i>
+                            <span>Participation confirmée</span>
+                        </div>
+                        <div class="timeline-item">
+                            <i class="fas fa-play text-primary"></i>
+                            <span>Trajet démarré</span>
+                        </div>
+                        <div class="timeline-item">
+                            <i class="fas fa-exclamation-triangle text-danger"></i>
+                            <span>Problème signalé le {{ participation.dateSignalement|date('d/m/Y') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-left: 30px;
+    position: relative;
+}
+
+.timeline-item i {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    text-align: center;
+}
+
+.timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 20px;
+    width: 2px;
+    height: 20px;
+    background: #e9ecef;
+}
+</style>
+{% endblock %}

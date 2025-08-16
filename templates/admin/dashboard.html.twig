@@ -1,0 +1,348 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - EcoRide{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center mb-0">
+                <i class="fas fa-cogs eco-icon" style="font-size: 2rem;"></i>
+                Administration EcoRide
+            </h1>
+            <p class="text-center text-muted">Tableau de bord administrateur</p>
+        </div>
+    </div>
+
+    <!-- Messages Flash -->
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    <!-- Statistiques principales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-coins text-warning" style="font-size: 2rem;"></i>
+                    <h3 class="mt-2">{{ total_credits_gagnes|default(0) }}</h3>
+                    <p class="text-muted mb-0">Crédits gagnés total</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-users text-primary" style="font-size: 2rem;"></i>
+                    <h3 class="mt-2">{{ utilisateurs|length }}</h3>
+                    <p class="text-muted mb-0">Utilisateurs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-user-tie text-info" style="font-size: 2rem;"></i>
+                    <h3 class="mt-2">{{ employes|length }}</h3>
+                    <p class="text-muted mb-0">Employés</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <a href="{{ path('app_admin_creer_employe') }}" class="btn btn-eco w-100">
+                        <i class="fas fa-plus me-2"></i>Nouvel employé
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line me-2"></i>Covoiturages par jour (30 derniers jours)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="covoituragesChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Crédits gagnés par jour (30 derniers jours)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="creditsChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs pour la gestion -->
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="utilisateurs-tab" data-bs-toggle="tab" data-bs-target="#utilisateurs-tab-content" type="button" role="tab">
+                <i class="fas fa-users me-2"></i>Utilisateurs ({{ utilisateurs|length }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="employes-tab" data-bs-toggle="tab" data-bs-target="#employes-tab-content" type="button" role="tab">
+                <i class="fas fa-user-tie me-2"></i>Employés ({{ employes|length }})
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="adminTabsContent">
+        <!-- Tab Utilisateurs -->
+        <div class="tab-pane fade show active" id="utilisateurs-tab-content" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-users me-2"></i>Gestion des utilisateurs</h5>
+                </div>
+                <div class="card-body">
+                    {% if utilisateurs is empty %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-users text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3">Aucun utilisateur</h5>
+                            <p class="text-muted">Aucun utilisateur enregistré pour le moment.</p>
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Pseudo</th>
+                                        <th>Email</th>
+                                        <th>Rôle</th>
+                                        <th>Crédits</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for utilisateur in utilisateurs %}
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-user me-2"></i>{{ utilisateur.pseudo }}
+                                                {% if not utilisateur.verifie %}
+                                                    <span class="badge bg-warning ms-2">Non vérifié</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ utilisateur.email }}</td>
+                                            <td>
+                                                {% if utilisateur.role == 'chauffeur' %}
+                                                    <span class="badge bg-primary">Chauffeur</span>
+                                                {% elseif utilisateur.role == 'passager' %}
+                                                    <span class="badge bg-info">Passager</span>
+                                                {% elseif utilisateur.role == 'passager_chauffeur' %}
+                                                    <span class="badge bg-success">Passager/Chauffeur</span>
+                                                {% elseif utilisateur.role starts with 'suspendu_' %}
+                                                    <span class="badge bg-danger">Suspendu</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{{ utilisateur.role|title }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-warning">{{ utilisateur.credit }} 💳</span>
+                                            </td>
+                                            <td>
+                                                {% if utilisateur.role starts with 'suspendu_' %}
+                                                    <span class="text-danger"><i class="fas fa-ban me-1"></i>Suspendu</span>
+                                                {% else %}
+                                                    <span class="text-success"><i class="fas fa-check-circle me-1"></i>Actif</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if utilisateur.role starts with 'suspendu_' %}
+                                                    <form method="post" action="{{ path('app_admin_reactiver_utilisateur', {'id': utilisateur.id}) }}" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Réactiver">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </form>
+                                                {% else %}
+                                                    <form method="post" action="{{ path('app_admin_suspendre_utilisateur', {'id': utilisateur.id}) }}" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Suspendre" 
+                                                                onclick="return confirm('Êtes-vous sûr de vouloir suspendre cet utilisateur ?')">
+                                                            <i class="fas fa-ban"></i>
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Employés -->
+        <div class="tab-pane fade" id="employes-tab-content" role="tabpanel">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-user-tie me-2"></i>Gestion des employés</h5>
+                    <a href="{{ path('app_admin_creer_employe') }}" class="btn btn-eco">
+                        <i class="fas fa-plus me-1"></i>Nouvel employé
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if employes is empty %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-user-tie text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3">Aucun employé</h5>
+                            <p class="text-muted">Créez votre premier employé pour commencer.</p>
+                            <a href="{{ path('app_admin_creer_employe') }}" class="btn btn-eco">
+                                <i class="fas fa-plus me-1"></i>Créer un employé
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Pseudo</th>
+                                        <th>Email</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for employe in employes %}
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-user-tie me-2"></i>{{ employe.pseudo }}
+                                            </td>
+                                            <td>{{ employe.email }}</td>
+                                            <td>
+                                                {% if employe.role starts with 'suspendu_' %}
+                                                    <span class="text-danger"><i class="fas fa-ban me-1"></i>Suspendu</span>
+                                                {% else %}
+                                                    <span class="text-success"><i class="fas fa-check-circle me-1"></i>Actif</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if employe.role starts with 'suspendu_' %}
+                                                    <form method="post" action="{{ path('app_admin_reactiver_utilisateur', {'id': employe.id}) }}" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Réactiver">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </form>
+                                                {% else %}
+                                                    <form method="post" action="{{ path('app_admin_suspendre_utilisateur', {'id': employe.id}) }}" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Suspendre" 
+                                                                onclick="return confirm('Êtes-vous sûr de vouloir suspendre cet employé ?')">
+                                                            <i class="fas fa-ban"></i>
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Graphique des covoiturages par jour
+fetch('{{ path('app_admin_graphique_covoiturages') }}')
+    .then(response => response.json())
+    .then(data => {
+        const ctx = document.getElementById('covoituragesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(item => item.date),
+                datasets: [{
+                    label: 'Covoiturages créés',
+                    data: data.map(item => item.count),
+                    borderColor: 'var(--eco-green)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+// Graphique des crédits gagnés par jour
+fetch('{{ path('app_admin_graphique_credits') }}')
+    .then(response => response.json())
+    .then(data => {
+        const ctx = document.getElementById('creditsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.date),
+                datasets: [{
+                    label: 'Crédits gagnés',
+                    data: data.map(item => item.total),
+                    backgroundColor: 'var(--eco-blue)',
+                    borderColor: 'var(--eco-blue)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

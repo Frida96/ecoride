@@ -1,0 +1,163 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un employé - Administration{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- En-tête -->
+            <div class="text-center mb-4">
+                <h1>
+                    <i class="fas fa-user-plus eco-icon" style="font-size: 2rem;"></i>
+                    Créer un employé
+                </h1>
+                <p class="text-muted">Ajouter un nouveau membre à l'équipe</p>
+            </div>
+
+            <!-- Messages Flash -->
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            <!-- Formulaire -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-user-tie me-2"></i>Informations de l'employé</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="pseudo" class="form-label">
+                                <i class="fas fa-user me-1"></i>Pseudo *
+                            </label>
+                            <input type="text" class="form-control" id="pseudo" name="pseudo" required 
+                                   placeholder="Nom d'utilisateur de l'employé">
+                            <div class="form-text">Le pseudo sera utilisé pour se connecter à l'espace employé.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>Email *
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" required 
+                                   placeholder="adresse@email.com">
+                            <div class="form-text">L'adresse email doit être unique dans le système.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="mot_de_passe" class="form-label">
+                                <i class="fas fa-lock me-1"></i>Mot de passe *
+                            </label>
+                            <input type="password" class="form-control" id="mot_de_passe" name="mot_de_passe" required 
+                                   placeholder="Mot de passe sécurisé" minlength="8">
+                            <div class="form-text">
+                                Le mot de passe doit contenir au minimum 8 caractères.
+                            </div>
+                            
+                            <!-- Indicateur de force du mot de passe -->
+                            <div class="progress mt-2" style="height: 5px;">
+                                <div class="progress-bar" id="password-strength" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <small id="password-feedback" class="text-muted"></small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Important :</strong> L'employé pourra se connecter immédiatement après la création 
+                            de son compte et aura accès à l'espace de modération des avis et de gestion des problèmes.
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ path('app_admin_dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Retour
+                            </a>
+                            <button type="submit" class="btn btn-eco">
+                                <i class="fas fa-user-plus me-1"></i>Créer l'employé
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Informations sur les droits -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Droits et responsabilités</h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Un employé aura accès aux fonctionnalités suivantes :</p>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Validation et refus des avis laissés par les passagers
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Visualisation des covoiturages signalés comme problématiques
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Résolution des conflits entre chauffeurs et passagers
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Gestion des remboursements et ajustements de crédits
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('mot_de_passe');
+    const strengthBar = document.getElementById('password-strength');
+    const feedback = document.getElementById('password-feedback');
+
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        const strength = calculatePasswordStrength(password);
+        
+        // Mettre à jour la barre de progression
+        strengthBar.style.width = strength.percentage + '%';
+        strengthBar.className = 'progress-bar ' + strength.colorClass;
+        feedback.textContent = strength.text;
+        feedback.className = 'text-' + strength.textColor;
+    });
+
+    function calculatePasswordStrength(password) {
+        let score = 0;
+        let feedback = '';
+        
+        if (password.length >= 8) score += 20;
+        if (password.match(/[a-z]/)) score += 20;
+        if (password.match(/[A-Z]/)) score += 20;
+        if (password.match(/[0-9]/)) score += 20;
+        if (password.match(/[^a-zA-Z0-9]/)) score += 20;
+        
+        if (score < 40) {
+            return { percentage: score, colorClass: 'bg-danger', text: 'Faible', textColor: 'danger' };
+        } else if (score < 60) {
+            return { percentage: score, colorClass: 'bg-warning', text: 'Moyen', textColor: 'warning' };
+        } else if (score < 80) {
+            return { percentage: score, colorClass: 'bg-info', text: 'Bon', textColor: 'info' };
+        } else {
+            return { percentage: score, colorClass: 'bg-success', text: 'Excellent', textColor: 'success' };
+        }
+    }
+});
+</script>
+{% endblock %}

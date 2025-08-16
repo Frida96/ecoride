@@ -16,6 +16,9 @@ class Trajet
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $dateCreation = null;
+
     #[ORM\Column(length: 100)]
     private ?string $lieuDepart = null;
 
@@ -51,6 +54,8 @@ class Trajet
     public function __construct()
     {
         $this->participations = new ArrayCollection();
+        $this->dateCreation = new \DateTime();
+        // ... autres initialisations existantes
     }
 
     public function getId(): ?int

@@ -75,4 +75,33 @@ class Participation
         $this->trajet = $trajet;
         return $this;
     }
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $commentaireProbleme = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $dateSignalement = null;
+
+    // Getters et setters
+
+    public function getCommentaireProbleme(): ?string
+    {
+        return $this->commentaireProbleme;
+    }
+
+    public function setCommentaireProbleme(?string $commentaireProbleme): self
+    {
+        $this->commentaireProbleme = $commentaireProbleme;
+        return $this;
+    }
+
+    public function getDateSignalement(): ?\DateTime
+    {
+        return $this->dateSignalement;
+    }
+
+    public function setDateSignalement(?\DateTime $dateSignalement): self
+    {
+        $this->dateSignalement = $dateSignalement;
+        return $this;
+    }
 }

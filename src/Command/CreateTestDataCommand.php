@@ -62,11 +62,11 @@ class CreateTestDataCommand extends Command
         $io->section('Création des utilisateurs...');
         
         $usersData = [
-            ['pseudo' => 'EcoMartin', 'email' => 'martin@ecoride.fr', 'role' => 'chauffeur'],
-            ['pseudo' => 'GreenSophie', 'email' => 'sophie@ecoride.fr', 'role' => 'chauffeur'],
-            ['pseudo' => 'NatureLuc', 'email' => 'luc@ecoride.fr', 'role' => 'chauffeur'],
-            ['pseudo' => 'BioPierre', 'email' => 'pierre@ecoride.fr', 'role' => 'chauffeur'],
-            ['pseudo' => 'EcoMarie', 'email' => 'marie@ecoride.fr', 'role' => 'passager'],
+            ['pseudo' => 'EcoMartin', 'email' => 'martin@exemple.fr', 'role' => 'chauffeur'],
+            ['pseudo' => 'GreenSophie', 'email' => 'sophie@exemple.fr', 'role' => 'chauffeur'],
+            ['pseudo' => 'NatureLuc', 'email' => 'luc@exemple.fr', 'role' => 'chauffeur'],
+            ['pseudo' => 'BioPierre', 'email' => 'pierre@exemple.fr', 'role' => 'chauffeur'],
+            ['pseudo' => 'EcoMarie', 'email' => 'marie@exemple.fr', 'role' => 'passager'],
         ];
 
         $users = [];

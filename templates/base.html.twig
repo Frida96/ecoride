@@ -169,8 +169,16 @@
                                     {% if app.user.role in ['chauffeur', 'passager_chauffeur'] %}
                                         <li><a class="dropdown-item" href="{{ path('app_voyage_proposer') }}"><i class="fas fa-plus me-2"></i>Proposer un voyage</a></li>
                                         <li><a class="dropdown-item" href="{{ path('app_mes_voyages') }}"><i class="fas fa-route me-2"></i>Mes voyages</a></li>
-                                    {% endif %}
+                                        {% endif %}
                                     <li><a class="dropdown-item" href="{{ path('app_profil_historique') }}"><i class="fas fa-history me-2"></i>Mon historique</a></li>
+                                                {% if app.user.role == 'employe' %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ path('app_employe_dashboard') }}"><i class="fas fa-user-tie me-2 text-primary"></i>Espace Employé</a></li>
+                                        {% endif %}
+                                    {% if app.user.role == 'admin' %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ path('app_admin_dashboard') }}"><i class="fas fa-cogs me-2 text-danger"></i>Administration</a></li>
+                                        {% endif %}
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Déconnexion</a></li>
                                 </ul>
