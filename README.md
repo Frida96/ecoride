@@ -1,102 +1,135 @@
-# 🌱 EcoRide - Plateforme de Covoiturage Écologique
+## EcoRide — Plateforme de covoiturage écologique
 
-## 📖 Description
+## Description
 
-EcoRide est une startup française dédiée au covoiturage écologique. Notre mission est de réduire l'impact environnemental des déplacements en encourageant le partage de véhicules, particulièrement les véhicules électriques.
+EcoRide est une application web de covoiturage qui favorise les déplacements responsables (accent sur les véhicules électriques). Elle permet de proposer des trajets, de rechercher/filtrer des covoiturages, de réserver une place, de laisser des avis, et de gérer un système de crédits.
 
-## ✨ Fonctionnalités Actuelles
+## Fonctionnalités
 
-### ✅ Terminées
-- **US 1** - Page d'accueil avec présentation et recherche
-- **US 2** - Menu de navigation complet
-- **US 7** - Système d'inscription et connexion
+- Recherche de trajets avec filtres (écologique, prix maximum, durée maximum, note minimale)
+- Détail d’un trajet (chauffeur, véhicule, heures, prix, note moyenne…)
+- Réservation/participation avec débit automatique des crédits et double validation
+- Gestion de véhicules par les utilisateurs chauffeurs
+- Système d’avis avec modération (employés)
+- Tableaux de bord Employé et Admin (modération, statistiques)
+- Authentification et rôles: `admin`, `employe`, `chauffeur`, `passager`, `passager_chauffeur`
 
-### 🚧 En cours de développement
-- **US 3** - Vue des covoiturages
-- **US 4** - Filtres de recherche
-- **US 5** - Vue détaillée des trajets
-- Et plus encore...
+## Stack technique
 
-## 🛠️ Technologies
+- Backend: Symfony 7.3, PHP 8.4
+- ORM: Doctrine (migrations, repositories)
+- Base de données: PostgreSQL
+- Frontend: Twig, Bootstrap 5, Font Awesome, Stimulus
+- Assets: Bootstrap via CDN; AssetMapper/Encore
 
-- **Backend**: Symfony 6, PHP 8
-- **Base de données**: PostgreSQL
-- **Frontend**: HTML5, CSS3, Bootstrap 5, JavaScript
-- **Sécurité**: Système d'authentification Symfony
+## Architecture (MVC)
 
-## 🚀 Installation en local
+- `src/Entity/`: modèles métier (`User`, `Vehicle`, `Trajet`, `Participation`, `Avis`)
+- `src/Repository/`: accès aux données (ex: `TrajetRepository` avec requêtes filtrées)
+- `src/Controller/`: logique applicative (recherche, participation, modération, etc.)
+- `templates/`: vues Twig (mise en page, pages fonctionnelles)
+- `src/Form/`: formulaires (validation côté serveur)
 
-### Prérequis
-- PHP 8.1+
+## Installation locale
+
+## Prérequis
+- PHP 8.4
 - Composer
-- PostgreSQL
-- Node.js (pour les assets)
+- PostgreSQL 
+- Symfony CLI
 
-### Étapes d'installation
+### Étapes
 
-1. **Cloner le projet**
-```bash
-git clone https://github.com/Frida96/ecoride.git
-cd ecoride
-```
-
-2. **Installer les dépendances**
+1) Installer les dépendances PHP
 ```bash
 composer install
-npm install
 ```
 
-3. **Configuration de la base de données**
+2) Configurer l’environnement
 ```bash
-# Copier le fichier d'environnement
 cp .env .env.local
-
-# Modifier DATABASE_URL dans .env.local avec vos credentials PostgreSQL
-DATABASE_URL="postgresql://username:password@127.0.0.1:5432/ecoride?serverVersion=15&charset=utf8"
+# Éditer .env.local et définir DATABASE_URL,
+# DATABASE_URL="postgresql://username:password@127.0.0.1:5432/ecoride?serverVersion=15&charset=utf8"
 ```
 
-4. **Créer la base de données**
+3) Préparer la base de données
 ```bash
 php bin/console doctrine:database:create
-php bin/console doctrine:migrations:migrate
+php bin/console doctrine:migrations:migrate --no-interaction
 ```
 
-5. **Lancer le serveur de développement**
+4) Démarrer le serveur
 ```bash
+symfony server:start -d
+# ou
 php -S localhost:8000 -t public/
 ```
 
-6. **Accéder à l'application**
-Ouvrez votre navigateur sur `http://localhost:8000`
+5) Charger des données de test
+```bash
+php bin/console app:create-test-data
+```
 
-## 🎨 Design
+6) Créer un administrateur
+```bash
+php bin/console app:create-admin <pseudo> <email> <mot_de_passe>
+```
 
-EcoRide utilise une charte graphique entièrement dédiée à l'écologie :
-- **Couleurs principales**: Verts (#22c55e, #16a34a, #dcfce7)
-- **Style**: Moderne, épuré, avec animations subtiles
-- **Responsive**: Compatible mobile et desktop
+### Trajets et recherche
+- `TrajetRepository::findTrajetsDisponibles()` applique: filtre lieu, date, statut, énergie (électrique), prix max, durée max, et disponibilité (places restantes).
+- `TrajetRepository::getNoteMoyenneChauffeur()` calcule la note moyenne à partir des `Avis` validés.
 
-## 📊 Base de données
+### Participations et crédits
+- Vérifications métier (places restantes, fonds suffisants, interdiction au chauffeur de se réserver lui-même, doublon de participation) dans `CovoiturageController::participer()`.
+- Débit/crédit automatique des comptes utilisateurs selon les actions (réservation, résolution de problème côté employé, etc.).
 
-Le projet utilise les entités suivantes :
-- **User**: Utilisateurs avec système de crédits
-- **Vehicle**: Véhicules avec information énergétique
-- **Trajet**: Covoiturages proposés
-- **Participation**: Réservations de places
-- **Avis**: Système d'évaluation
+### Avis et modération
+- Les avis sont stockés et validés par les employés (`EmployeController`).
+- Le front affiche les notes et commentaires validés.
 
-## 🤝 Contribution
+## Modèle de données (entités principales)
 
-Ce projet est développé dans le cadre d'une formation. Les contributions sont les bienvenues !
+- `User` (pseudo, email unique, rôle, crédits, préférences)
+- `Vehicle` (immatriculation, marque, modèle, couleur, énergie, date 1ère immatriculation)
+- `Trajet` (lieux, dates, prix, nbPlaces, statut, chauffeur, véhicule, dateCreation)
+- `Participation` (passager, trajet, statut, doubleValidation, commentaireProbleme, dateSignalement)
+- `Avis` (passager, chauffeur, note, commentaire, valide)
 
-## 📝 Licence
+## Design & UX
 
-Projet éducatif - Tous droits réservés
+- Layout moderne (dégradés, cards, hover states) dans `templates/base.html.twig`
+- Accessibilité de base (labels sur les champs, feedback visuels)
+- Responsive via Bootstrap 5
 
-## 👨‍💻 Développeur
+## Sécurité
 
-Développé avec ❤️ dans le cadre du TP DWWM
+- Authentification Symfony Security
+- Hachage sécurisé des mots de passe
+- Protection CSRF sur formulaires
+- Gestion de rôles applicatifs
+
+## Commandes utiles
+
+```bash
+# Vérifier le schéma Doctrine
+php bin/console doctrine:schema:validate
+
+# Vider le cache
+php bin/console cache:clear
+
+# Lancer le serveur
+symfony server:start -d
+```
+
+
+## Licence
+
+Projet pédagogique — tous droits réservés
+
+## Auteur
+
+Mbunga Longo — Projet EcoRide (TP DWWM)
 
 ---
 
-**🌍 Ensemble pour une mobilité plus verte ! 🚗💚**
+** Ensemble pour une mobilité plus verte ! **

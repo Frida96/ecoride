@@ -19,6 +19,12 @@ class Participation
     #[ORM\Column]
     private ?bool $doubleValidation = false;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $commentaireProbleme = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $dateSignalement = null;
+
     #[ORM\ManyToOne(inversedBy: 'participations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $passager = null;
@@ -75,13 +81,6 @@ class Participation
         $this->trajet = $trajet;
         return $this;
     }
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $commentaireProbleme = null;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $dateSignalement = null;
-
-    // Getters et setters
 
     public function getCommentaireProbleme(): ?string
     {

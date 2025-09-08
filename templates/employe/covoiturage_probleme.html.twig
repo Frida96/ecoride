@@ -33,12 +33,12 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <h6><i class="fas fa-map-marker-alt me-2 text-success"></i>Départ</h6>
-                            <p class="mb-0">{{ participation.trajet.adresseDepart }}</p>
+                            <p class="mb-0">{{ participation.trajet.lieuDepart }}</p>
                             <small class="text-muted">{{ participation.trajet.dateDepart|date('d/m/Y à H:i') }}</small>
                         </div>
                         <div class="col-md-6">
                             <h6><i class="fas fa-flag-checkered me-2 text-danger"></i>Arrivée</h6>
-                            <p class="mb-0">{{ participation.trajet.adresseArrivee }}</p>
+                            <p class="mb-0">{{ participation.trajet.lieuArrivee }}</p>
                             <small class="text-muted">{{ participation.trajet.dateArrivee|date('d/m/Y à H:i') }}</small>
                         </div>
                     </div>
@@ -170,12 +170,12 @@
                 <div class="card-body">
                     <div class="text-center mb-3">
                         <i class="fas fa-user-circle text-info" style="font-size: 3rem;"></i>
-                        <h5 class="mt-2">{{ participation.utilisateur.pseudo }}</h5>
+                        <h5 class="mt-2">{{ participation.passager.pseudo }}</h5>
                     </div>
                     <ul class="list-unstyled">
-                        <li><i class="fas fa-envelope me-2"></i>{{ participation.utilisateur.email }}</li>
-                        <li><i class="fas fa-coins me-2"></i>{{ participation.utilisateur.credit }} crédits</li>
-                        <li><i class="fas fa-user-check me-2"></i>{{ participation.utilisateur.verifie ? 'Vérifié' : 'Non vérifié' }}</li>
+                        <li><i class="fas fa-envelope me-2"></i>{{ participation.passager.email }}</li>
+                        <li><i class="fas fa-coins me-2"></i>{{ participation.passager.credit }} crédits</li>
+                        <li><i class="fas fa-user-check me-2"></i>{{ participation.passager.verifie ? 'Vérifié' : 'Non vérifié' }}</li>
                     </ul>
                 </div>
             </div>

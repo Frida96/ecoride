@@ -147,7 +147,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     // Méthodes pour UserInterface
     public function getRoles(): array
     {
-        return [$this->role === 'admin' ? 'ROLE_ADMIN' : ($this->role === 'employe' ? 'ROLE_EMPLOYE' : 'ROLE_USER')];
+        if ($this->role === 'admin') {
+            return ['ROLE_ADMIN'];
+        } elseif ($this->role === 'employe') {
+            return ['ROLE_EMPLOYE'];
+        } elseif (in_array($this->role, ['chauffeur', 'passager_chauffeur'])) {
+            return ['ROLE_CHAUFFEUR', 'ROLE_USER'];
+        } else {
+            return ['ROLE_USER'];
+        }
     }
 
     public function getUserIdentifier(): string
