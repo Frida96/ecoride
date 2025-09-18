@@ -165,7 +165,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // Rien à effacer pour l'instant
+    
     }
 
     // Relations
